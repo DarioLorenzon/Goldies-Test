@@ -1019,16 +1019,20 @@ async function load() {
 
   }
 
+if (!dbData) {
+  dbData = [];
+}
+
   data = mergeData(csv, dbData);
-
+  
   initialized = true;
-
+  
   if (needSave) {
-
+  
     await save();
-
+  
   }
-
+  
   draw();
 
 }
