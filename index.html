@@ -963,13 +963,48 @@
      → zusammenführen
   ===================================== */
 
+/* =====================================
+   LOAD
+   -------------------------------------
+   Ablauf:
+
+   1. CSV laden (Struktur)
+   2. Firestore laden (Daten + Kommentare)
+   3. Wenn DB leer → CSV verwenden
+   4. CSV + DB zusammenführen
+   5. Falls nötig → DB neu speichern
+   6. Tabelle zeichnen
+
+   Diese Version ist stabil für:
+
+   ✔ leere DB
+   ✔ fehlendes json
+   ✔ kaputtes json
+   ✔ neue CSV
+   ✔ neue Firebase
+   ✔ Test / Prod
+===================================== */
+
 async function load() {
+
+  /* =====================================
+     1. CSV laden
+  ===================================== */
 
   let csv = await loadCSV();
 
-  let dbData = null;
 
-  let needSave = false;
+  /* =====================================
+     Variablen vorbereiten
+  ===================================== */
+
+  let dbData = null;   // Daten aus Firestore
+  let needSave = false; // muss DB neu geschrieben werden?
+
+
+  /* =====================================
+     2. Firestore laden
+  ===================================== */
 
   try {
 
@@ -978,44 +1013,75 @@ async function load() {
       .doc("list")
       .get();
 
+
+    /* Dokument existiert */
+
     if (doc.exists) {
 
       const d = doc.data();
+
+
+      /* ---------------------------------
+         json vorhanden?
+      --------------------------------- */
 
       if (d.json && d.json !== "") {
 
         try {
 
+          // json → Array
           dbData = JSON.parse(d.json);
 
-        } catch (e) {
+        }
 
+        catch (e) {
+
+          // json kaputt → neu schreiben
           dbData = null;
           needSave = true;
 
         }
 
-      } else {
+      }
 
+      else {
+
+        // kein json → neu schreiben
         needSave = true;
 
       }
 
+
+      /* ---------------------------------
+         Kommentare laden
+      --------------------------------- */
+
       comments = d.comments || {};
 
-    } else {
+    }
 
+    else {
+
+      // Dokument fehlt → neu schreiben
       needSave = true;
 
     }
 
-  } catch (e) {
+  }
+
+  catch (e) {
 
     console.log("Firestore error", e);
+
+    // Fehler → CSV benutzen
     needSave = true;
 
   }
 
+
+  /* =====================================
+     3. Wenn keine DB Daten → leer setzen
+  ===================================== */
 
   if (!dbData) {
 
@@ -1024,10 +1090,25 @@ async function load() {
   }
 
 
+  /* =====================================
+     4. CSV + DB zusammenführen
+     CSV bestimmt Struktur
+     DB enthält Einträge
+  ===================================== */
+
   data = mergeData(csv, dbData);
+
+
+  /* =====================================
+     Initialisierung fertig
+  ===================================== */
 
   initialized = true;
 
+
+  /* =====================================
+     5. Falls DB leer → speichern
+  ===================================== */
 
   if (needSave) {
 
@@ -1035,6 +1116,10 @@ async function load() {
 
   }
 
+
+  /* =====================================
+     6. Tabelle zeichnen
+  ===================================== */
 
   draw();
 
