@@ -1168,7 +1168,10 @@ async function save() {
     comments: comments
   };
 
-  // Hauptspeicher
+
+  /* ===========================
+     Hauptspeicher
+  =========================== */
 
   await db
     .collection("training")
@@ -1176,19 +1179,31 @@ async function save() {
     .set(payload);
 
 
-  // Zeitstempel als ID
+  /* ===========================
+     Backup nur 1x pro Tag
+  =========================== */
 
-  const ts = new Date()
-    .toISOString()
-    .replace(/[:.]/g, "-");
+  const today =
+    new Date()
+      .toISOString()
+      .substring(0, 10); // YYYY-MM-DD
 
 
-  // Backup
+  const backupRef =
+    db.collection("backup").doc(today);
 
-  await db
-    .collection("backup")
-    .doc(ts)
-    .set(payload);
+
+  const backupDoc =
+    await backupRef.get();
+
+
+  if (!backupDoc.exists) {
+
+    await backupRef.set(payload);
+
+    console.log("Backup erstellt:", today);
+
+  }
 
 }
 
