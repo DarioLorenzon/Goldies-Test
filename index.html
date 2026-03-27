@@ -1162,20 +1162,32 @@ async function load() {
   ===================================== */
 
   async function save() {
-
+  
+    const payload = {
+      json: JSON.stringify(data),
+      comments: comments,
+      time: new Date().toISOString()
+    };
+  
+    // Hauptspeicher
+  
     await db
       .collection("training")
       .doc("list")
-      .set({
-
-        json:
-          JSON.stringify(data),
-
-        comments:
-          comments
-
-      });
-
+      .set(payload);
+  
+  
+    // Backup
+  
+    const ts = new Date()
+      .toISOString()
+      .replace(/[:.]/g, "-");
+  
+    await db
+      .collection("backup")
+      .doc(ts)
+      .set(payload);
+  
   }
 
 
