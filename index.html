@@ -267,9 +267,12 @@
   ===================================== */
 
   const firebaseConfig = {
-    apiKey: "AIzaSyA_X89nznC06g7brnrVmQoFHG2SiTXk0Hc",
-    authDomain: "goldies-89ea2.firebaseapp.com",
-    projectId: "goldies-89ea2"
+    apiKey: "AIzaSyA8W7v73ESxd_qUK15VzyUu_nx-6t0R7Yc",
+    authDomain: "goldies-test.firebaseapp.com",
+    projectId: "goldies-test",
+    storageBucket: "goldies-test.firebasestorage.app",
+    messagingSenderId: "472746893960",
+    appId: "1:472746893960:web:b31f810205dbcac420b53d"
   };
 
 
@@ -960,53 +963,75 @@
      → zusammenführen
   ===================================== */
 
-  async function load() {
+async function load() {
 
-    // CSV laden
-    let csv = await loadCSV();
+  let csv = await loadCSV();
 
-    let dbData = null;
+  let dbData = null;
 
+  let needSave = false;
 
-    try {
+  try {
 
-      let doc =
-        await db
-          .collection("training")
-          .doc("list")
-          .get();
+    let doc =
+      await db
+        .collection("training")
+        .doc("list")
+        .get();
 
+    if (doc.exists) {
 
-      if (doc.exists) {
+      let d = doc.data();
 
-        let d = doc.data();
+      if (d.json) {
 
+        try {
 
-        // JSON vorhanden
-        if (d.json) {
+          dbData = JSON.parse(d.json);
 
-          dbData =
-            JSON.parse(d.json);
+        } catch (e) {
+
+          dbData = null;
+          needSave = true;
 
         }
 
+      } else {
 
-        // Kommentare
-        comments =
-          d.comments || {};
+        needSave = true;
 
       }
 
-    }
+      comments = d.comments || {};
 
-    catch (e) {
+    } else {
 
-      console.log(
-        "DB load error",
-        e
-      );
+      needSave = true;
 
     }
+
+  }
+
+  catch (e) {
+
+    console.log("DB error", e);
+    needSave = true;
+
+  }
+
+  data = mergeData(csv, dbData);
+
+  initialized = true;
+
+  if (needSave) {
+
+    await save();
+
+  }
+
+  draw();
+
+}
 
 
     // CSV + DB zusammenführen
