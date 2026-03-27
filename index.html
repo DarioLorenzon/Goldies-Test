@@ -1161,34 +1161,36 @@ async function load() {
      → speichert Tabelle + Kommentare
   ===================================== */
 
-  async function save() {
-  
-    const payload = {
-      json: JSON.stringify(data),
-      comments: comments,
-      time: new Date().toISOString()
-    };
-  
-    // Hauptspeicher
-  
-    await db
-      .collection("training")
-      .doc("list")
-      .set(payload);
-  
-  
-    // Backup
-  
-    const ts = new Date()
-      .toISOString()
-      .replace(/[:.]/g, "-");
-  
-    await db
-      .collection("backup")
-      .doc(ts)
-      .set(payload);
-  
-  }
+async function save() {
+
+  const payload = {
+    json: JSON.stringify(data),
+    comments: comments
+  };
+
+  // Hauptspeicher
+
+  await db
+    .collection("training")
+    .doc("list")
+    .set(payload);
+
+
+  // Zeitstempel als ID
+
+  const ts = new Date()
+    .toISOString()
+    .replace(/[:.]/g, "-");
+
+
+  // Backup
+
+  await db
+    .collection("backup")
+    .doc(ts)
+    .set(payload);
+
+}
 
 
 
