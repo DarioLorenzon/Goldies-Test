@@ -963,92 +963,98 @@
      → zusammenführen
   ===================================== */
 
-async function load() {
-
-  let csv = await loadCSV();
-
-  let dbData = null;
-
-  let needSave = false;
-
-  try {
-
-    let doc =
-      await db
+  async function load() {
+  
+    let csv = await loadCSV();
+  
+    let dbData = null;
+  
+    let needSave = false;
+  
+    try {
+  
+      const doc = await db
         .collection("training")
         .doc("list")
         .get();
-
-    if (doc.exists) {
-
-      let d = doc.data();
-
-      if (d.json) {
-
-        try {
-
-          dbData = JSON.parse(d.json);
-
-        } catch (e) {
-
-          dbData = null;
+  
+      if (doc.exists) {
+  
+        const d = doc.data();
+  
+        if (d.json && d.json !== "") {
+  
+          try {
+  
+            dbData = JSON.parse(d.json);
+  
+          } catch (e) {
+  
+            console.log("JSON parse error");
+            dbData = null;
+            needSave = true;
+  
+          }
+  
+        } else {
+  
           needSave = true;
-
+  
         }
-
+  
+        comments = d.comments || {};
+  
       } else {
-
+  
         needSave = true;
-
+  
       }
-
-      comments = d.comments || {};
-
-    } else {
-
+  
+    } catch (e) {
+  
+      console.log("Firestore error", e);
       needSave = true;
-
+  
     }
-
-  }
-
-  catch (e) {
-
-    console.log("DB error", e);
-    needSave = true;
-
-  }
-
-if (!dbData) {
-  dbData = [];
-}
-
-  data = mergeData(csv, dbData);
   
-  initialized = true;
   
-  if (needSave) {
+    // Wenn DB leer → CSV verwenden
+    if (!dbData) {
   
-    await save();
+      dbData = [];
   
-  }
+    }
   
-  draw();
-
-}
-
-
-    // CSV + DB zusammenführen
-    data =
-      mergeData(csv, dbData);
-
-
+  
+    data = mergeData(csv, dbData);
+  
     initialized = true;
-
-
+  
+  
+    // Wenn DB leer → automatisch speichern
+    if (needSave) {
+  
+      await save();
+  
+    }
+  
+  
     draw();
-
+  
   }
+  
+  
+      // CSV + DB zusammenführen
+      data =
+        mergeData(csv, dbData);
+  
+  
+      initialized = true;
+  
+  
+      draw();
+  
+    }
 
 
 
