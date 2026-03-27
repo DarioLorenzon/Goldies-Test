@@ -532,9 +532,18 @@ async function load() {
 
       let d = doc.data();
 
-      if (d.json && d.json.length > 0) {
+      if (d.json) {
 
-        dbData = JSON.parse(d.json);
+        try {
+
+          dbData = JSON.parse(d.json);
+
+        } catch (e) {
+
+          dbData = null;
+          needSave = true;
+
+        }
 
       } else {
 
@@ -551,6 +560,29 @@ async function load() {
     }
 
   }
+
+  catch (e) {
+
+    console.log("DB error", e);
+    needSave = true;
+
+  }
+
+
+  data = mergeData(csv, dbData);
+
+  initialized = true;
+
+
+  if (needSave) {
+
+    await save();
+
+  }
+
+  draw();
+
+}
 
   catch (e) {
 
