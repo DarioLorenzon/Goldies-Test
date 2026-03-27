@@ -963,98 +963,95 @@
      → zusammenführen
   ===================================== */
 
-  async function load() {
-  
-    let csv = await loadCSV();
-  
-    let dbData = null;
-  
-    let needSave = false;
-  
-    try {
-  
-      const doc = await db
-        .collection("training")
-        .doc("list")
-        .get();
-  
-      if (doc.exists) {
-  
-        const d = doc.data();
-  
-        if (d.json && d.json !== "") {
-  
-          try {
-  
-            dbData = JSON.parse(d.json);
-  
-          } catch (e) {
-  
-            console.log("JSON parse error");
-            dbData = null;
-            needSave = true;
-  
-          }
-  
-        } else {
-  
+async function load() {
+
+  console.log("LOAD START");
+
+  let csv = await loadCSV();
+
+  console.log("CSV", csv);
+
+  let dbData = null;
+
+  let needSave = false;
+
+  try {
+
+    const doc = await db
+      .collection("training")
+      .doc("list")
+      .get();
+
+    console.log("DOC", doc.exists);
+
+    if (doc.exists) {
+
+      const d = doc.data();
+
+      console.log("DATA", d);
+
+      if (d.json && d.json !== "") {
+
+        try {
+
+          dbData = JSON.parse(d.json);
+
+        } catch (e) {
+
+          console.log("JSON ERROR");
           needSave = true;
-  
+
         }
-  
-        comments = d.comments || {};
-  
+
       } else {
-  
+
+        console.log("JSON EMPTY");
         needSave = true;
-  
+
       }
-  
-    } catch (e) {
-  
-      console.log("Firestore error", e);
+
+      comments = d.comments || {};
+
+    } else {
+
+      console.log("DOC NOT EXIST");
       needSave = true;
-  
+
     }
-  
-  
-    // Wenn DB leer → CSV verwenden
-    if (!dbData) {
-  
-      dbData = [];
-  
-    }
-  
-  
-    data = mergeData(csv, dbData);
-  
-    initialized = true;
-  
-  
-    // Wenn DB leer → automatisch speichern
-    if (needSave) {
-  
-      await save();
-  
-    }
-  
-  
-    draw();
-  
+
+  } catch (e) {
+
+    console.log("FIRESTORE ERROR", e);
+    needSave = true;
+
   }
-  
-  
-      // CSV + DB zusammenführen
-      data =
-        mergeData(csv, dbData);
-  
-  
-      initialized = true;
-  
-  
-      draw();
-  
-    }
+
+
+  if (!dbData) {
+
+    dbData = [];
+
+  }
+
+  console.log("MERGE");
+
+  data = mergeData(csv, dbData);
+
+  initialized = true;
+
+  if (needSave) {
+
+    console.log("SAVE");
+
+    await save();
+
+  }
+
+  console.log("DRAW");
+
+  draw();
+
+}
 
 
 
