@@ -965,11 +965,7 @@
 
 async function load() {
 
-  console.log("LOAD START");
-
   let csv = await loadCSV();
-
-  console.log("CSV", csv);
 
   let dbData = null;
 
@@ -982,13 +978,9 @@ async function load() {
       .doc("list")
       .get();
 
-    console.log("DOC", doc.exists);
-
     if (doc.exists) {
 
       const d = doc.data();
-
-      console.log("DATA", d);
 
       if (d.json && d.json !== "") {
 
@@ -998,14 +990,13 @@ async function load() {
 
         } catch (e) {
 
-          console.log("JSON ERROR");
+          dbData = null;
           needSave = true;
 
         }
 
       } else {
 
-        console.log("JSON EMPTY");
         needSave = true;
 
       }
@@ -1014,14 +1005,13 @@ async function load() {
 
     } else {
 
-      console.log("DOC NOT EXIST");
       needSave = true;
 
     }
 
   } catch (e) {
 
-    console.log("FIRESTORE ERROR", e);
+    console.log("Firestore error", e);
     needSave = true;
 
   }
@@ -1033,26 +1023,22 @@ async function load() {
 
   }
 
-  console.log("MERGE");
 
   data = mergeData(csv, dbData);
 
   initialized = true;
 
-  if (needSave) {
 
-    console.log("SAVE");
+  if (needSave) {
 
     await save();
 
   }
 
-  console.log("DRAW");
 
   draw();
 
 }
-
 
 
   /* =====================================
