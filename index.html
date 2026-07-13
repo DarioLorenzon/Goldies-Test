@@ -430,8 +430,6 @@ const firebaseConfigTest = {
     const kalender = await loadCalendar();
     const spieler = await loadPlayers();
 
-    console.log("Kalender:", kalender);
-    console.log("Spieler:", spieler);
 
     const table = [
         [""],   // Datumszeile
@@ -459,7 +457,6 @@ const firebaseConfigTest = {
 
     });
 
-    console.log(table);
 
     return table;
 
@@ -527,7 +524,7 @@ function mergeData(csv, dbData) {
 
   // Lookup aus Firestore erstellen
   const lookup = {};
-  console.log(lookup);
+
 
   if (dbData && dbData.length > 2) {
 
@@ -571,7 +568,6 @@ for (let r = 2; r < csv.length; r++) {
         
         const value = lookup[key] || "";
         
-        console.log(key, value);
         
         row.push(value);
         
@@ -582,14 +578,6 @@ for (let r = 2; r < csv.length; r++) {
         }
 
 
-  console.log(result[0]);
-  console.log(result[1]);
-
-console.log("Lookup:", lookup);
-
-console.log(
-    "Isa 01.04 =",
-    lookup["Isa|01.04"]
 );
 return result;
 
