@@ -778,6 +778,86 @@ async function createDailyBackup() {
     console.log("Backup erstellt:", today);
 
 }
+
+    /* =====================================
+   BACKUPS AUFLISTEN
+===================================== */
+
+async function listBackups() {
+
+    const snapshot = await db
+        .collection("backup")
+        .orderBy("created", "desc")
+        .get();
+
+    const backups = [];
+
+    snapshot.forEach(doc => {
+
+        backups.push(doc.id);
+
+    });
+
+    return backups;
+
+}
+
+    /* =====================================
+   BACKUP WIEDERHERSTELLEN
+===================================== */
+
+async function restoreBackup() {
+
+    const backups = await listBackups();
+
+    if (backups.length === 0) {
+
+        alert("Keine Backups gefunden.");
+
+        return;
+
+    }
+
+    const selected = prompt(
+        "Backup auswählen:\n\n" +
+        backups.join("\n")
+    );
+
+    if (!selected)
+        return;
+
+    const doc = await db
+        .collection("backup")
+        .doc(selected)
+        .get();
+
+    if (!doc.exists) {
+
+        alert("Backup nicht gefunden.");
+
+        return;
+
+    }
+
+    if (!confirm("Backup " + selected + " wiederherstellen?"))
+        return;
+
+    await db
+        .collection("training")
+        .doc("list")
+        .set({
+
+            json: doc.data().json,
+
+            comments: doc.data().comments || {}
+
+        });
+
+    await load();
+
+    alert("Backup erfolgreich wiederhergestellt.");
+
+}
   
 
   /* =====================================
