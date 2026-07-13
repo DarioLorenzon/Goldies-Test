@@ -1,7 +1,7 @@
-Datum;Typ;Ort;Zeit
-01.04;Training;Guggach;20:30
-08.04;Training;Guggach;20:30
-15.04;Training;Guggach;20:30
-22.04;Training;Guggach;20:30
-29.04;Training;Guggach;20:30
-06.05;Training;Guggach;20:30
+Datum,Typ,Ort,Zeit
+01.04,Training,Guggach,20:30
+08.04,Training,Guggach,20:30
+15.04,Training,Guggach,20:30
+22.04,Training,Guggach,20:30
+29.04,Training,Guggach,20:30
+06.05,Training,Guggach,20:30
