@@ -129,7 +129,19 @@ document.querySelectorAll(".adminBtn").forEach(btn => {
 // CSV Synchronisieren
 document
 .getElementById("btnSync")
-.onclick = analyseCSV;
+.onclick = () => {
+
+    if (typeof Sync !== "undefined") {
+
+        Sync.analyse();
+
+    } else {
+
+        alert("sync.js wurde nicht geladen.");
+
+    }
+
+};
 
 
 /* =====================================
