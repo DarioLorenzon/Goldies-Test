@@ -55,6 +55,16 @@ const Sync = {
     console.log("Entfernte Daten:");
     console.log(dateResult.removedDates);
 
+   console.log("");
+
+   console.log("Neue Spieler:");
+   console.log(playerResult.newPlayers);
+
+   console.log("");
+
+   console.log("Entfernte Spieler:");
+   console.log(playerResult.removedPlayers);
+
 },
 
 
