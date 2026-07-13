@@ -779,26 +779,40 @@ async function createDailyBackup() {
 
 }
 
-    /* =====================================
+/* =====================================
    BACKUPS AUFLISTEN
 ===================================== */
 
 async function listBackups() {
 
-    const snapshot = await db
-        .collection("backup")
-        .orderBy("created", "desc")
-        .get();
+    try {
 
-    const backups = [];
+        const snapshot = await db
+            .collection("backup")
+            .get();
 
-    snapshot.forEach(doc => {
+        const backups = [];
 
-        backups.push(doc.id);
+        snapshot.forEach(doc => {
 
-    });
+            backups.push(doc.id);
 
-    return backups;
+        });
+
+        // Neueste zuerst
+        backups.sort().reverse();
+
+        return backups;
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        return [];
+
+    }
 
 }
 
@@ -810,6 +824,7 @@ async function restoreBackup() {
 
     // Alle Backups lesen
     const backups = await listBackups();
+    console.log("Backups:", backups);
 
     if (backups.length === 0) {
 
