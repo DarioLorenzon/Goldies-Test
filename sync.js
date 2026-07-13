@@ -136,7 +136,6 @@ const Sync = {
 
     }
 
-};
 
 /* =====================================
    SPIELER VERGLEICHEN
@@ -172,3 +171,5 @@ comparePlayers(csv, dbData) {
     };
 
 },
+
+};
