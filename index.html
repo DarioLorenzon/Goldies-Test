@@ -631,6 +631,30 @@ function getDateObject(text) {
     return date;
 
 }
+
+
+/* =====================================
+   DATUM PARSEN
+   TT.MM.JJJJ
+===================================== */
+
+function parseDate(text) {
+
+    if (!text) return null;
+
+    const p = text.split(".");
+
+    if (p.length !== 3)
+        return null;
+
+    const day = parseInt(p[0], 10);
+    const month = parseInt(p[1], 10) - 1;
+    const year = parseInt(p[2], 10);
+
+    return new Date(year, month, day);
+
+}
+
     
   /* =====================================
    WEEKEND ERKENNEN
@@ -638,9 +662,9 @@ function getDateObject(text) {
 
 function isWeekend(text) {
 
-    if (!text) return false;
+    const date = parseDate(text);
 
-    const date = new Date(text.split(".").reverse().join("-"));
+    if (!date) return false;
 
     const day = date.getDay();
 
@@ -656,18 +680,16 @@ function isWeekend(text) {
 
 function isToday(text) {
 
-    if (!text) return false;
+    const date = parseDate(text);
 
-    const date = new Date(text.split(".").reverse().join("-"));
+    if (!date) return false;
 
     const today = new Date();
 
     return (
-
         date.getDate() === today.getDate() &&
         date.getMonth() === today.getMonth() &&
         date.getFullYear() === today.getFullYear()
-
     );
 
 }
@@ -680,17 +702,20 @@ function isToday(text) {
 
 function isFutureOrToday(text) {
 
-    if (!text) return true;
+    const date = parseDate(text);
 
-    const date = new Date(text.split(".").reverse().join("-"));
+    if (!date)
+        return true;
 
     const today = new Date();
 
     today.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
 
     return date >= today;
 
 }
+    
   /* =====================================
    CSV SYNCHRONISIEREN
 ===================================== */
