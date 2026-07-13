@@ -429,8 +429,6 @@ const firebaseConfigTest = {
 
     const kalender = await loadCalendar();
 
-    console.log("Kalender:", kalender);
-    console.log("Anzahl Termine:", kalender.length);
    
     const spieler = await loadPlayers();
 
@@ -477,7 +475,7 @@ const firebaseConfigTest = {
 
             complete: res => {
 
-              console.log(res.data[0]);
+
           
               resolve(
                   res.data.filter(r => r.Datum)
@@ -841,7 +839,6 @@ async function createDailyBackup() {
 
     });
 
-    console.log("Backup erstellt:", today);
 
 }
 
@@ -890,7 +887,6 @@ async function restoreBackup() {
 
     // Alle Backups lesen
     const backups = await listBackups();
-    console.log("Backups:", backups);
 
     if (backups.length === 0) {
 
@@ -981,8 +977,7 @@ function formatDate(text) {
 
     if (!data.length) return;
 
-      console.log(data[0]);
-      console.log(data[0].length);
+
 
 
     /* =====================================
@@ -1001,16 +996,9 @@ for (let c = 0; c < data[0].length; c++) {
 
     }
 
-    console.log(
-        data[0][c],
-        parseDate(data[0][c]),
-        isFutureOrToday(data[0][c])
+
     );
 
-      console.log(
-          data[0][c],
-          parseDate(data[0][c]),
-          isFutureOrToday(data[0][c])
       );
   
     if (isFutureOrToday(data[0][c])) {
