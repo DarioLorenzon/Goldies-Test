@@ -210,95 +210,12 @@
      → liest teilnahmen.csv
   ===================================== */
 
- async function loadCSV() {
-
-    const kalender = await loadCalendar();
-
-   
-    const spieler = await loadPlayers();
 
 
-    const table = [
-        [""],   // Datumszeile
-        [""]    // Typzeile
-    ];
-
-    // Datum + Typ übernehmen
-    kalender.forEach(k => {
-
-        table[0].push(k.Datum);
-        table[1].push(k.Typ);
-
-    });
-
-    // Spieler übernehmen
-    spieler.forEach(name => {
-
-        const row = [name];
-
-        while (row.length < table[0].length) {
-            row.push("");
-        }
-
-        table.push(row);
-
-    });
 
 
-    return table;
-
-}
-
-    async function loadCalendar() {
-
-    return new Promise(resolve => {
-
-        Papa.parse("./kalender.csv", {
-
-            download: true,
-            header: true,
-
-            complete: res => {
 
 
-          
-              resolve(
-                  res.data.filter(r => r.Datum)
-              );
-          
-          }
-
-        });
-
-    });
-
-}
-
-
-async function loadPlayers() {
-
-    return new Promise(resolve => {
-
-        Papa.parse("./spieler.csv", {
-
-            download: true,
-            header: true,
-
-            complete: res => {
-
-                resolve(
-                    res.data
-                        .filter(r => r.Name)
-                        .map(r => r.Name)
-                );
-
-            }
-
-        });
-
-    });
-
-}
 
   /* =====================================
      MERGE CSV + FIREBASE
@@ -306,78 +223,7 @@ async function loadPlayers() {
      → DB enthält Einträge
   ===================================== */
 
-function mergeData(csv, dbData) {
 
-    // Neue Tabelle
-    const result = [];
-
-    // Lookup aus Firestore erstellen
-    const lookup = {};
-
-    if (dbData && dbData.length > 2) {
-
-        for (let r = 2; r < dbData.length; r++) {
-
-            const player = (dbData[r][0] || "").trim();
-
-            for (let c = 1; c < dbData[0].length; c++) {
-
-                const date = (dbData[0][c] || "").trim();
-                const value = dbData[r][c] || "";
-
-                if (value !== "") {
-
-                    lookup[player + "|" + date] = value;
-
-                }
-
-            }
-
-        }
-
-    }
-
-    // Kopfzeile
-    result.push([...csv[0]]);
-
-    // Typzeile
-    result.push([...csv[1]]);
-
-    // Spieler
-    for (let r = 2; r < csv.length; r++) {
-
-        const player = (csv[r][0] || "").trim();
-        const row = [player];
-
-        for (let c = 1; c < csv[0].length; c++) {
-
-            const date = (csv[0][c] || "").trim();
-
-            // Neues Format (TT.MM.JJJJ)
-            const key = player + "|" + date;
-            
-            // Altes Format (TT.MM)
-            const shortDate = date.substring(0, 5);
-            const oldKey = player + "|" + shortDate;
-            
-            // Zuerst neues Format suchen,
-            // danach altes Format
-            const value =
-                lookup[key] ??
-                lookup[oldKey] ??
-                "";
-            
-            row.push(value);
-
-        }
-
-        result.push(row);
-
-    }
-
-    return result;
-
-}
  
 
   /* =====================================
@@ -1339,7 +1185,7 @@ async function save() {
 
 <script src="admin.js?v=2.2.0b"></script>
 
-
+<script src="csv.js?v=3.0.0"></script>
 
 </body>
 </html>
