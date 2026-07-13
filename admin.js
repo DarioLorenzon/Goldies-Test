@@ -1,6 +1,28 @@
 /* =====================================
-   GOLDIES ADMIN
-   Version 3.0
+   GOLDIES
+   -------------------------------------
+
+   Modul:
+   admin.js
+
+   Version:
+   3.0.0
+
+   Beschreibung:
+   Admin-Menü für Goldies
+
+   - CSV synchronisieren
+   - Backup erstellen
+   - Backup wiederherstellen
+   - Statistik
+   - Excel Export
+   - Einstellungen
+
+===================================== */
+
+
+/* =====================================
+   APP INFORMATION
 ===================================== */
 
 const APP = {
@@ -31,17 +53,25 @@ Object.assign(adminButton.style, {
     position: "fixed",
     bottom: "15px",
     right: "15px",
+
     width: "50px",
     height: "50px",
-    borderRadius: "50%",
-    background: "#1976d2",
-    color: "white",
-    fontSize: "28px",
+
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+
+    borderRadius: "50%",
+
+    background: "#1976d2",
+    color: "white",
+
+    fontSize: "28px",
+
     cursor: "pointer",
+
     boxShadow: "0 2px 8px rgba(0,0,0,.3)",
+
     zIndex: "9999"
 
 });
@@ -58,19 +88,29 @@ const adminWindow = document.createElement("div");
 Object.assign(adminWindow.style, {
 
     position: "fixed",
+
     top: "50%",
     left: "50%",
+
     transform: "translate(-50%,-50%)",
+
     background: "white",
+
     border: "1px solid #999",
     borderRadius: "10px",
+
     padding: "20px",
+
     minWidth: "320px",
+
     boxShadow: "0 5px 20px rgba(0,0,0,.3)",
+
     display: "none",
+
     zIndex: "10000"
 
 });
+
 
 adminWindow.innerHTML = `
 
@@ -125,7 +165,7 @@ document.body.appendChild(adminWindow);
 
 
 /* =====================================
-   BUTTON STYLE
+   BUTTON DESIGN
 ===================================== */
 
 document.querySelectorAll(".adminBtn").forEach(btn => {
@@ -141,69 +181,64 @@ document.querySelectorAll(".adminBtn").forEach(btn => {
    BUTTON EVENTS
 ===================================== */
 
-// CSV synchronisieren
-document
-    .getElementById("btnSync")
-    .onclick = async () => {
 
-        if (!confirm("CSV synchronisieren?"))
-            return;
+/* CSV synchronisieren */
 
-        await synchronizeCSV();
+document.getElementById("btnSync").onclick = async () => {
 
-    };
+    if (!confirm("CSV synchronisieren?"))
+        return;
 
+    await synchronizeCSV();
 
-// Backup erstellen
-document
-    .getElementById("btnBackup")
-    .onclick = async () => {
-
-        await createDailyBackup();
-
-        alert("Backup erstellt.");
-
-    };
+};
 
 
-// Backup wiederherstellen
-document
-    .getElementById("btnRestore")
-    .onclick = async () => {
+/* Backup erstellen */
 
-        await restoreBackup();
+document.getElementById("btnBackup").onclick = async () => {
 
-    };
+    await createDailyBackup();
 
+    alert("Backup erstellt.");
 
-// Statistik
-document
-    .getElementById("btnStats")
-    .onclick = () => {
-
-        alert("Statistik folgt in Version 3.1");
-
-    };
+};
 
 
-// Excel Export
-document
-    .getElementById("btnExport")
-    .onclick = () => {
+/* Backup wiederherstellen */
 
-        alert("Excel Export folgt in Version 3.1");
+document.getElementById("btnRestore").onclick = async () => {
 
-    };
+    await restoreBackup();
+
+};
 
 
-// Einstellungen
-document
-    .getElementById("btnSettings")
-    .onclick = () => {
+/* Statistik */
 
-        alert("Einstellungen folgen in Version 3.1");
+document.getElementById("btnStats").onclick = () => {
 
-    };
+    alert("Statistik folgt in Version 3.1");
+
+};
+
+
+/* Excel Export */
+
+document.getElementById("btnExport").onclick = () => {
+
+    alert("Excel Export folgt in Version 3.1");
+
+};
+
+
+/* Einstellungen */
+
+document.getElementById("btnSettings").onclick = () => {
+
+    alert("Einstellungen folgen in Version 3.1");
+
+};
 
 
 /* =====================================
@@ -234,10 +269,8 @@ adminButton.onclick = () => {
    ADMIN SCHLIESSEN
 ===================================== */
 
-document
-    .getElementById("closeAdmin")
-    .onclick = () => {
+document.getElementById("closeAdmin").onclick = () => {
 
-        adminWindow.style.display = "none";
+    adminWindow.style.display = "none";
 
-    };
+};
