@@ -802,30 +802,36 @@ async function listBackups() {
 
 }
 
-    /* =====================================
+/* =====================================
    BACKUP WIEDERHERSTELLEN
 ===================================== */
 
 async function restoreBackup() {
 
+    // Alle Backups lesen
     const backups = await listBackups();
 
     if (backups.length === 0) {
 
-        alert("Keine Backups gefunden.");
+        alert("Keine Backups vorhanden.");
 
         return;
 
     }
 
+    // Backup auswählen
     const selected = prompt(
-        "Backup auswählen:\n\n" +
+
+        "Welches Backup wiederherstellen?\n\n" +
+
         backups.join("\n")
+
     );
 
     if (!selected)
         return;
 
+    // Backup laden
     const doc = await db
         .collection("backup")
         .doc(selected)
@@ -839,9 +845,11 @@ async function restoreBackup() {
 
     }
 
-    if (!confirm("Backup " + selected + " wiederherstellen?"))
+    // Sicherheit
+    if (!confirm("Backup " + selected + " wirklich wiederherstellen?"))
         return;
 
+    // Training überschreiben
     await db
         .collection("training")
         .doc("list")
@@ -853,6 +861,7 @@ async function restoreBackup() {
 
         });
 
+    // Neu laden
     await load();
 
     alert("Backup erfolgreich wiederhergestellt.");
