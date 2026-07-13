@@ -120,21 +120,7 @@
 
 
 
-  /* =====================================
-     AUTOSAVE
-     → speichert nach kurzer Pause
-  ===================================== */
-
-  function autoSave() {
-
-    if (!initialized) return;
-
-    clearTimeout(saveTimer);
-
-    saveTimer = setTimeout(save, 500);
-
-  }
-
+ 
 
 
   /* =====================================
@@ -1001,178 +987,6 @@ for (let c = 0; c < data[0].length; c++) {
    ✔ Test / Prod
 ===================================== */
 
-async function load() {
-
-  /* =====================================
-     1. CSV laden
-  ===================================== */
-
-  let csv = await loadCSV();
-
-
-  /* =====================================
-     Variablen vorbereiten
-  ===================================== */
-
-  let dbData = null;   // Daten aus Firestore
-  let needSave = false; // muss DB neu geschrieben werden?
-
-
-  /* =====================================
-     2. Firestore laden
-  ===================================== */
-
-  try {
-
-    const doc = await db
-      .collection("training")
-      .doc("list")
-      .get();
-
-
-    /* Dokument existiert */
-
-    if (doc.exists) {
-
-      const d = doc.data();
-
-
-      /* ---------------------------------
-         json vorhanden?
-      --------------------------------- */
-
-      if (d.json && d.json !== "") {
-
-        try {
-
-          // json → Array
-          dbData = JSON.parse(d.json);
-
-        }
-
-        catch (e) {
-
-          // json kaputt → neu schreiben
-          dbData = null;
-          needSave = true;
-
-        }
-
-      }
-
-      else {
-
-        // kein json → neu schreiben
-        needSave = true;
-
-      }
-
-
-      /* ---------------------------------
-         Kommentare laden
-      --------------------------------- */
-
-      comments = d.comments || {};
-
-    }
-
-    else {
-
-      // Dokument fehlt → neu schreiben
-      needSave = true;
-
-    }
-
-  }
-
-  catch (e) {
-
-    console.log("Firestore error", e);
-
-    // Fehler → CSV benutzen
-    needSave = true;
-
-  }
-
-
-  /* =====================================
-     3. Wenn keine DB Daten → leer setzen
-  ===================================== */
-
-  if (!dbData) {
-
-    dbData = [];
-
-  }
-
-
-  /* =====================================
-     4. CSV + DB zusammenführen
-     CSV bestimmt Struktur
-     DB enthält Einträge
-  ===================================== */
-
-  data = mergeData(csv, dbData);
-
-
-  /* =====================================
-     Initialisierung fertig
-  ===================================== */
-
-  initialized = true;
-
-
-  /* =====================================
-     5. Falls DB leer → speichern
-  ===================================== */
-
-  if (needSave) {
-
-    await save();
-
-  }
-
-
-  /* =====================================
-     6. Tabelle zeichnen
-  ===================================== */
-
-  draw();
-
-}
-
-
-  /* =====================================
-     SAVE
-     → speichert Tabelle + Kommentare
-  ===================================== */
-
-async function save() {
-
-  const payload = {
-    json: JSON.stringify(data),
-    comments: comments
-  };
-
-
-  /* ===========================
-     Hauptspeicher
-  =========================== */
-
-  await db
-    .collection("training")
-    .doc("list")
-    .set(payload);
-
-}
-
-
-
-  /* =====================================
-     START
-  ===================================== */
-
-  load();
 
 
 
@@ -1183,9 +997,12 @@ async function save() {
   ===================================== -->
 
 
-<script src="admin.js?v=2.2.0b"></script>
-
+<script src="firebase.js?v=3.0.0"></script>
 <script src="csv.js?v=3.0.0"></script>
+
+<script src="main.js?v=3.0.0"></script>
+
+<script src="admin.js?v=3.0.0"></script>
 
 </body>
 </html>
