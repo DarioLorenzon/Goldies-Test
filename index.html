@@ -519,6 +519,10 @@ async function loadPlayers() {
 
 function mergeData(csv, dbData) {
 
+  const player = csv[r][0].trim();
+  const date = csv[0][c].trim();
+  const key = player + "|" + date;
+
   // Neue Tabelle
   const result = [];
 
@@ -578,7 +582,6 @@ for (let r = 2; r < csv.length; r++) {
         }
 
 
-);
 return result;
 
 }
