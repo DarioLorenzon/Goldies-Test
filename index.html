@@ -435,7 +435,15 @@ const firebaseConfigTest = {
 
   // Kopfzeile
   table.push([""]);
-  kalender.forEach(k => table[0].push(k.Datum));
+   
+    kalender.forEach(k => {
+
+    const keys = Object.keys(k);
+
+    table[0].push(k[keys[0]]);
+    table[1].push(k[keys[1]]);
+
+});
 
   // Typzeile
   table.push([""]);
@@ -470,9 +478,11 @@ const firebaseConfigTest = {
 
       complete: res => {
 
-        resolve(res.data.filter(r => r.Datum));
+    console.log(res.data[0]);
 
-      }
+    resolve(res.data.filter(r => Object.keys(r).length > 0));
+
+    }
 
     });
 
