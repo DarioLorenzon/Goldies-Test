@@ -983,22 +983,28 @@ function formatDate(text) {
 
     let visibleCols = [];
 
-    for (let c = 0; c < data[0].length; c++) {
+for (let c = 0; c < data[0].length; c++) {
 
-      if (c === 0) {
+    if (c === 0) {
 
         visibleCols.push(c);
         continue;
 
-      }
+    }
 
-      if (isFutureOrToday(data[0][c])) {
+    console.log(
+        data[0][c],
+        parseDate(data[0][c]),
+        isFutureOrToday(data[0][c])
+    );
+
+    if (isFutureOrToday(data[0][c])) {
 
         visibleCols.push(c);
 
-      }
-
     }
+
+}
 
 
     /* =====================================
