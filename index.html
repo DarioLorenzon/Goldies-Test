@@ -568,14 +568,18 @@ for (let r = 2; r < csv.length; r++) {
 
         const date = csv[0][c];
         const key = player + "|" + date;
-
-        row.push(lookup[key] || "");
-
-    }
-
-    result.push(row);
-
-}
+        
+        const value = lookup[key] || "";
+        
+        console.log(key, value);
+        
+        row.push(value);
+        
+            }
+        
+            result.push(row);
+        
+        }
 
 
   console.log(result[0]);
