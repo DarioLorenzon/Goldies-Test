@@ -675,6 +675,70 @@ return result;
 
 
   /* =====================================
+   CSV SYNCHRONISIEREN
+===================================== */
+
+async function synchronizeCSV() {
+
+    try {
+
+        // CSV einlesen
+        const csv = await loadCSV();
+
+        // Firestore lesen
+        const doc = await db
+            .collection("training")
+            .doc("list")
+            .get();
+
+        let dbData = [];
+
+        if (doc.exists && doc.data().json) {
+
+            dbData = JSON.parse(doc.data().json);
+
+        }
+
+        // Daten zusammenführen
+        const merged = mergeData(csv, dbData);
+
+        // Kommentare beibehalten
+        const comments = doc.exists
+            ? (doc.data().comments || {})
+            : {};
+
+        // Firestore speichern
+        await db
+            .collection("training")
+            .doc("list")
+            .set({
+
+                json: JSON.stringify(merged),
+
+                comments: comments
+
+            });
+
+        // Tabelle neu laden
+        await load();
+
+        alert("CSV erfolgreich synchronisiert.");
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        alert("Fehler beim Synchronisieren.");
+
+    }
+
+}
+
+    synchronizeCSV();
+
+  /* =====================================
      DRAW TABLE
      → baut komplette Tabelle neu
   ===================================== */
