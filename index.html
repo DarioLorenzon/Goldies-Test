@@ -998,6 +998,12 @@ for (let c = 0; c < data[0].length; c++) {
         isFutureOrToday(data[0][c])
     );
 
+      console.log(
+          data[0][c],
+          parseDate(data[0][c]),
+          isFutureOrToday(data[0][c])
+      );
+  
     if (isFutureOrToday(data[0][c])) {
 
         visibleCols.push(c);
