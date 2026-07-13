@@ -482,48 +482,23 @@ const firebaseConfigTest = {
 
   function mergeData(csv, dbData) {
 
-    let result = [];
+  // Lookup aus Firestore erstellen
+  const lookup = {};
 
-    let rows = csv.length;
-    let cols = csv[0].length;
+  if (dbData && dbData.length > 2) {
 
+    for (let r = 2; r < dbData.length; r++) {
 
-    for (let r = 0; r < rows; r++) {
+      const player = dbData[r][0];
 
-      result[r] = [];
+      for (let c = 1; c < dbData[0].length; c++) {
 
+        const date = dbData[0][c];
+        const value = dbData[r][c];
 
-      for (let c = 0; c < cols; c++) {
+        if (value !== "") {
 
-        let csvVal = csv[r]?.[c] ?? "";
-        let dbVal = dbData?.[r]?.[c] ?? "";
-
-
-        // Datum-Zeile
-        if (r === 0) {
-
-          result[r][c] = csvVal;
-
-        }
-
-        // Typ-Zeile
-        else if (r === 1) {
-
-          result[r][c] = csvVal;
-
-        }
-
-        // Name-Spalte
-        else if (c === 0) {
-
-          result[r][c] = csvVal;
-
-        }
-
-        // Teilnahme
-        else {
-
-          result[r][c] = dbVal || "";
+          lookup[player + "|" + date] = value;
 
         }
 
@@ -531,10 +506,45 @@ const firebaseConfigTest = {
 
     }
 
-    return result;
+  }
+
+
+  // Neue Tabelle erzeugen
+  const result = [];
+
+  // Datum
+  result.push([...csv[0]]);
+
+  // Typ
+  result.push([...csv[1]]);
+
+
+  // Spieler
+  for (let r = 2; r < csv.length; r++) {
+
+    const row = [];
+
+    const player = csv[r][0];
+
+    row.push(player);
+
+    for (let c = 1; c < csv[0].length; c++) {
+
+      const date = csv[0][c];
+
+      const key = player + "|" + date;
+
+      row.push(lookup[key] || "");
+
+    }
+
+    result.push(row);
 
   }
 
+  return result;
+
+}
 
 
   /* =====================================
