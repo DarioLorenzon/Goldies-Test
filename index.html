@@ -512,74 +512,34 @@ function mergeData(csv, dbData) {
   }
 
   // Kopfzeile
-  result.push([...csv[0]]);
+result.push([...csv[0]]);
 
-  // Typzeile
-  result.push([...csv[1]]);
+// Typzeile
+result.push([...csv[1]]);
 
-  // Spieler
-  for (let r = 2; r < csv.length; r++) {
+// Spieler
+for (let r = 2; r < csv.length; r++) {
 
     const player = csv[r][0];
-
     const row = [player];
 
     for (let c = 1; c < csv[0].length; c++) {
 
-      const date = csv[0][c];
+        const date = csv[0][c];
+        const key = player + "|" + date;
 
-      const key = player + "|" + date;
-
-      row.push(lookup[key] || "");
-
-    }
-
-    result.push(row);
-
-  }
-
-  return result;
-
-}
-
-
-  // Neue Tabelle erzeugen
-  const result = [];
-
-  // Datum
-  result.push([...csv[0]]);
-
-  // Typ
-  result.push([...csv[1]]);
-
-
-  // Spieler
-  for (let r = 2; r < csv.length; r++) {
-
-    const row = [];
-
-    const player = csv[r][0];
-
-    row.push(player);
-
-    for (let c = 1; c < csv[0].length; c++) {
-
-      const date = csv[0][c];
-
-      const key = player + "|" + date;
-
-      row.push(lookup[key] || "");
+        row.push(lookup[key] || "");
 
     }
 
     result.push(row);
 
-  }
-
-  return result;
-
 }
 
+return result;
+
+}
+ 
 
   /* =====================================
      WEEKEND ERKENNEN
