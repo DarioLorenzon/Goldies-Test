@@ -427,94 +427,92 @@ const firebaseConfigTest = {
 
  async function loadCSV() {
 
-  const kalender = await loadCalendar();
-  const spieler = await loadPlayers();
+    const kalender = await loadCalendar();
+    const spieler = await loadPlayers();
 
+    console.log("Kalender:", kalender);
+    console.log("Spieler:", spieler);
 
-  const table = [];
+    const table = [
+        [""],   // Datumszeile
+        [""]    // Typzeile
+    ];
 
-  // Kopfzeile
-  table.push([""]);
-   
+    // Datum + Typ übernehmen
     kalender.forEach(k => {
 
-    const keys = Object.keys(k);
+        table[0].push(k.Datum);
+        table[1].push(k.Typ);
 
-    table[0].push(k[keys[0]]);
-    table[1].push(k[keys[1]]);
+    });
 
-});
+    // Spieler übernehmen
+    spieler.forEach(name => {
 
-  // Typzeile
-  table.push([""]);
-  kalender.forEach(k => table[1].push(k.Typ));
+        const row = [name];
 
-  // Spieler
-  spieler.forEach(name => {
+        while (row.length < table[0].length) {
+            row.push("");
+        }
 
-    const row = [name];
+        table.push(row);
 
-    while (row.length < table[0].length) {
-      row.push("");
-    }
+    });
 
-    table.push(row);
+    console.log(table);
 
-  });
-
-  return table;
+    return table;
 
 }
 
     async function loadCalendar() {
 
-  return new Promise(resolve => {
+    return new Promise(resolve => {
 
-    Papa.parse("./kalender.csv", {
+        Papa.parse("./kalender.csv", {
 
-      download: true,
-      header: true,
-      
-      complete: res => {
+            download: true,
+            header: true,
 
-    console.log(res.data[0]);
+            complete: res => {
 
-    resolve(res.data.filter(r => Object.keys(r).length > 0));
+                resolve(
+                    res.data.filter(r => r.Datum)
+                );
 
-    }
+            }
+
+        });
 
     });
-
-  });
 
 }
 
 
 async function loadPlayers() {
 
-  return new Promise(resolve => {
+    return new Promise(resolve => {
 
-    Papa.parse("./spieler.csv", {
+        Papa.parse("./spieler.csv", {
 
-      download: true,
-      header: true,
-      
-      complete: res => {
+            download: true,
+            header: true,
 
-        resolve(
-          res.data
-             .filter(r => r.Name)
-             .map(r => r.Name)
-        );
+            complete: res => {
 
-      }
+                resolve(
+                    res.data
+                        .filter(r => r.Name)
+                        .map(r => r.Name)
+                );
+
+            }
+
+        });
 
     });
 
-  });
-
 }
-
 
   /* =====================================
      MERGE CSV + FIREBASE
