@@ -660,9 +660,16 @@ function mergeData(csv, dbData) {
    CSV SYNCHRONISIEREN
 ===================================== */
 
+/* =====================================
+   CSV SYNCHRONISIEREN
+===================================== */
+
 async function synchronizeCSV() {
 
     try {
+
+        // Tages-Backup erstellen
+        await createDailyBackup();
 
         // CSV einlesen
         const csv = await loadCSV();
@@ -696,7 +703,6 @@ async function synchronizeCSV() {
             .set({
 
                 json: JSON.stringify(merged),
-
                 comments: comments
 
             });
@@ -718,6 +724,60 @@ async function synchronizeCSV() {
 
 }
 
+
+/* =====================================
+   TAGES-BACKUP
+   Wird maximal 1x pro Tag erstellt
+===================================== */
+
+async function createDailyBackup() {
+
+    const today =
+        new Date()
+            .toISOString()
+            .substring(0, 10);
+
+    const backupRef =
+        db.collection("backup").doc(today);
+
+    const backupDoc =
+        await backupRef.get();
+
+    // Existiert bereits → nichts machen
+    if (backupDoc.exists) {
+
+        return;
+
+    }
+
+    // Aktuelle Daten lesen
+    const doc = await db
+        .collection("training")
+        .doc("list")
+        .get();
+
+    if (!doc.exists) {
+
+        return;
+
+    }
+
+    // Backup speichern
+    await backupRef.set({
+
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+
+        version: "3.0.0",
+
+        json: doc.data().json || "",
+
+        comments: doc.data().comments || {}
+
+    });
+
+    console.log("Backup erstellt:", today);
+
+}
   
 
   /* =====================================
@@ -1282,33 +1342,6 @@ async function save() {
     .collection("training")
     .doc("list")
     .set(payload);
-
-
-  /* ===========================
-     Backup nur 1x pro Tag
-  =========================== */
-
-  const today =
-    new Date()
-      .toISOString()
-      .substring(0, 10); // YYYY-MM-DD
-
-
-  const backupRef =
-    db.collection("backup").doc(today);
-
-
-  const backupDoc =
-    await backupRef.get();
-
-
-  if (!backupDoc.exists) {
-
-    await backupRef.set(payload);
-
-    console.log("Backup erstellt:", today);
-
-  }
 
 }
 
