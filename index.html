@@ -477,13 +477,13 @@ const firebaseConfigTest = {
 
             complete: res => {
 
-            console.log("PapaParse:", res.data);
-        
-            resolve(
-                res.data.filter(r => r.Datum)
-            );
-        
-        }
+              console.log(res.data[0]);
+          
+              resolve(
+                  res.data.filter(r => r.Datum)
+              );
+          
+          }
 
         });
 
