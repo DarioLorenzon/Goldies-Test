@@ -7,7 +7,7 @@ const APP = {
 
     name: "Goldies",
 
-    version: "3.0",
+    version: "3.0.0",
 
     admin: {
 
