@@ -1,5 +1,16 @@
 /* =====================================
    GOLDIES
+   -------------------------------------
+
+   Modul:
+   sync.js
+
+   Version:
+   2.2.0b
+
+   Beschreibung:
+   CSV ↔ Firestore Synchronisation
+
 ===================================== */
 
 console.log("sync.js Version 2.2.0b geladen");
@@ -20,12 +31,25 @@ const Sync = {
         console.log(" Version " + APP.version);
         console.log("=================================");
 
+        // CSV laden
         const csv = await this.loadCSV();
 
+        // Firestore laden
         const dbData = await this.loadFirestore();
 
-        console.log("CSV:", csv);
-        console.log("Firestore:", dbData);
+        // Datum vergleichen
+        const dateResult =
+            this.compareDates(csv, dbData);
+
+        console.log("");
+
+        console.log("Neue Daten:");
+        console.log(dateResult.newDates);
+
+        console.log("");
+
+        console.log("Entfernte Daten:");
+        console.log(dateResult.removedDates);
 
     },
 
@@ -61,6 +85,40 @@ const Sync = {
             return [];
 
         return JSON.parse(d.json);
+
+    },
+
+
+    /* =====================================
+       DATEN VERGLEICHEN
+    ===================================== */
+
+    compareDates(csv, dbData) {
+
+        // Datumszeile CSV
+        const csvDates = csv[0].slice(1);
+
+        // Datumszeile Firestore
+        const dbDates = dbData[0].slice(1);
+
+
+        // Neue Daten
+        const newDates =
+            csvDates.filter(date => !dbDates.includes(date));
+
+
+        // Entfernte Daten
+        const removedDates =
+            dbDates.filter(date => !csvDates.includes(date));
+
+
+        return {
+
+            newDates,
+
+            removedDates
+
+        };
 
     }
 
