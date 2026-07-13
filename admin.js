@@ -128,21 +128,16 @@ document.querySelectorAll(".adminBtn").forEach(btn => {
 
 // CSV Synchronisieren
 document
-.getElementById("btnSync")
-.onclick = () => {
+    .getElementById("btnSync")
+    .onclick = async () => {
 
-    if (typeof Sync !== "undefined") {
+        if (!confirm(
+            "CSV mit Firestore synchronisieren?"
+        )) return;
 
-        Sync.analyse();
+        await synchronizeCSV();
 
-    } else {
-
-        alert("sync.js wurde nicht geladen.");
-
-    }
-
-};
-
+    };
 
 /* =====================================
    OPEN
