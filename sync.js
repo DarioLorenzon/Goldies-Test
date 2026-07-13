@@ -6,21 +6,14 @@
    sync.js
 
    Version:
-   2.2.0b
+   2.2.0c
 
    Beschreibung:
    CSV ↔ Firestore Synchronisation
 
-   Enthält:
-
-   - CSV laden
-   - Firestore laden
-   - Datumsvergleich
-   - Spielervergleich
-
 ===================================== */
 
-console.log("sync.js Version 2.2.0b geladen");
+console.log("sync.js Version 2.2.0c geladen");
 
 
 const Sync = {
@@ -44,7 +37,7 @@ const Sync = {
         // Firestore laden
         const dbData = await this.loadFirestore();
 
-        // Datum vergleichen
+        // Daten vergleichen
         const dateResult =
             this.compareDates(csv, dbData);
 
@@ -117,31 +110,16 @@ const Sync = {
 
     compareDates(csv, dbData) {
 
-        // Datumszeile CSV
-        const csvDates =
-            csv[0].slice(1);
-
-        // Datumszeile Firestore
-        const dbDates =
-            dbData[0].slice(1);
-
-        // Neue Daten
-        const newDates =
-            csvDates.filter(
-                date => !dbDates.includes(date)
-            );
-
-        // Entfernte Daten
-        const removedDates =
-            dbDates.filter(
-                date => !csvDates.includes(date)
-            );
+        const csvDates = csv[0].slice(1);
+        const dbDates = dbData[0].slice(1);
 
         return {
 
-            newDates,
+            newDates:
+                csvDates.filter(date => !dbDates.includes(date)),
 
-            removedDates
+            removedDates:
+                dbDates.filter(date => !csvDates.includes(date))
 
         };
 
@@ -154,37 +132,71 @@ const Sync = {
 
     comparePlayers(csv, dbData) {
 
-        // Spielernamen CSV
         const csvPlayers =
-            csv
-                .slice(2)
-                .map(row => row[0]);
+            csv.slice(2).map(r => r[0]);
 
-        // Spielernamen Firestore
         const dbPlayers =
-            dbData
-                .slice(2)
-                .map(row => row[0]);
-
-        // Neue Spieler
-        const newPlayers =
-            csvPlayers.filter(
-                name => !dbPlayers.includes(name)
-            );
-
-        // Entfernte Spieler
-        const removedPlayers =
-            dbPlayers.filter(
-                name => !csvPlayers.includes(name)
-            );
+            dbData.slice(2).map(r => r[0]);
 
         return {
 
-            newPlayers,
+            newPlayers:
+                csvPlayers.filter(name => !dbPlayers.includes(name)),
 
-            removedPlayers
+            removedPlayers:
+                dbPlayers.filter(name => !csvPlayers.includes(name))
 
         };
+
+    },
+
+
+    /* =====================================
+       SPIELER SUCHEN
+
+       Rückgabe:
+       Zeilennummer
+       oder -1
+    ===================================== */
+
+    findPlayerRow(table, playerName) {
+
+        for (let r = 2; r < table.length; r++) {
+
+            if (table[r][0] === playerName) {
+
+                return r;
+
+            }
+
+        }
+
+        return -1;
+
+    },
+
+
+    /* =====================================
+       DATUM SUCHEN
+
+       Rückgabe:
+       Spaltennummer
+       oder -1
+    ===================================== */
+
+    findDateColumn(table, date) {
+
+        for (let c = 1; c < table[0].length; c++) {
+
+            if (table[0][c] === date) {
+
+                return c;
+
+            }
+
+        }
+
+        return -1;
 
     }
 
