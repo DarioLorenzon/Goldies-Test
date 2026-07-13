@@ -428,6 +428,10 @@ const firebaseConfigTest = {
  async function loadCSV() {
 
     const kalender = await loadCalendar();
+
+    console.log("Kalender:", kalender);
+    console.log("Anzahl Termine:", kalender.length);
+   
     const spieler = await loadPlayers();
 
 
@@ -473,11 +477,13 @@ const firebaseConfigTest = {
 
             complete: res => {
 
-                resolve(
-                    res.data.filter(r => r.Datum)
-                );
-
-            }
+            console.log("PapaParse:", res.data);
+        
+            resolve(
+                res.data.filter(r => r.Datum)
+            );
+        
+        }
 
         });
 
