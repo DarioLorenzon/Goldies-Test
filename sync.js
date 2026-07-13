@@ -49,14 +49,69 @@ const Sync = {
         console.log("Entfernte Spieler:");
         console.log(playerResult.removedPlayers);
 
-        // Lookup erzeugen
-        const lookup = this.createLookup(dbData);
 
-        console.log("");
-        console.log("Lookup:");
-        console.log(lookup);
+         // Lookup erzeugen
+         const lookup = this.createLookup(dbData);
+         
+         /* =====================================
+   NEUE TABELLE AUFBAUEN
 
-    },
+   Erzeugt aus
+
+   - CSV
+   - Lookup
+
+   eine komplett neue Tabelle.
+
+===================================== */
+
+buildMergedTable(csv, lookup) {
+
+    const newTable = [];
+
+    // ----------------------------
+    // Kopfzeile (Datum)
+    // ----------------------------
+
+    newTable.push([...csv[0]]);
+
+    // ----------------------------
+    // Typzeile
+    // ----------------------------
+
+    newTable.push([...csv[1]]);
+
+    // ----------------------------
+    // Spieler
+    // ----------------------------
+
+    for (let r = 2; r < csv.length; r++) {
+
+        const player = csv[r][0];
+
+        const row = [];
+
+        // Name
+        row.push(player);
+
+        // Alle Daten
+        for (let c = 1; c < csv[0].length; c++) {
+
+            const date = csv[0][c];
+
+            const key = player + "|" + date;
+
+            row.push(lookup[key] || "");
+
+        }
+
+        newTable.push(row);
+
+    }
+
+    return newTable;
+
+},
 
     /* =====================================
        CSV LADEN
