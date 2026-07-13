@@ -527,6 +527,7 @@ function mergeData(csv, dbData) {
 
   // Lookup aus Firestore erstellen
   const lookup = {};
+  console.log(lookup);
 
   if (dbData && dbData.length > 2) {
 
@@ -579,7 +580,13 @@ for (let r = 2; r < csv.length; r++) {
 
   console.log(result[0]);
   console.log(result[1]);
-  
+
+console.log("Lookup:", lookup);
+
+console.log(
+    "Isa 01.04 =",
+    lookup["Isa|01.04"]
+);
 return result;
 
 }
