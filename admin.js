@@ -119,15 +119,14 @@ document.querySelectorAll(".adminBtn").forEach(btn => {
   btn.style.padding = "8px";
   btn.style.cursor = "pointer";
 
-  btn.onclick = () => {
-
-    alert("Diese Funktion kommt in einer der nächsten Versionen.");
-
-  };
-
 });
 
 
+/* =====================================
+   BUTTON EVENTS
+===================================== */
+
+// CSV Synchronisieren
 document
 .getElementById("btnSync")
 .onclick = analyseCSV;
@@ -175,6 +174,8 @@ document
 
 async function analyseCSV() {
 
+   alert("Analyse gestartet");
+   
     console.clear();
 
     console.log("=================================");
