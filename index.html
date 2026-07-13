@@ -480,7 +480,10 @@ const firebaseConfigTest = {
      → DB enthält Einträge
   ===================================== */
 
-  function mergeData(csv, dbData) {
+function mergeData(csv, dbData) {
+
+  // Neue Tabelle
+  const result = [];
 
   // Lookup aus Firestore erstellen
   const lookup = {};
@@ -494,7 +497,7 @@ const firebaseConfigTest = {
       for (let c = 1; c < dbData[0].length; c++) {
 
         const date = dbData[0][c];
-        const value = dbData[r][c];
+        const value = dbData[r][c] || "";
 
         if (value !== "") {
 
@@ -507,6 +510,37 @@ const firebaseConfigTest = {
     }
 
   }
+
+  // Kopfzeile
+  result.push([...csv[0]]);
+
+  // Typzeile
+  result.push([...csv[1]]);
+
+  // Spieler
+  for (let r = 2; r < csv.length; r++) {
+
+    const player = csv[r][0];
+
+    const row = [player];
+
+    for (let c = 1; c < csv[0].length; c++) {
+
+      const date = csv[0][c];
+
+      const key = player + "|" + date;
+
+      row.push(lookup[key] || "");
+
+    }
+
+    result.push(row);
+
+  }
+
+  return result;
+
+}
 
 
   // Neue Tabelle erzeugen
