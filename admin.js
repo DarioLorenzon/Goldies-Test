@@ -131,9 +131,9 @@ document
     .getElementById("btnSync")
     .onclick = async () => {
 
-        if (!confirm(
-            "CSV mit Firestore synchronisieren?"
-        )) return;
+        if (!confirm("CSV synchronisieren?")) {
+            return;
+        }
 
         await synchronizeCSV();
 
