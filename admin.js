@@ -7,9 +7,13 @@ const APP = {
 
   name: "Goldies",
 
-  version: "2.1.0",
+  version: "2.1.1",
 
-  adminPin: "1234"
+  admin: {
+
+    pin: "1234"
+
+  }
 
 };
 
@@ -128,6 +132,18 @@ document.querySelectorAll(".adminBtn").forEach(btn => {
 ===================================== */
 
 adminButton.onclick = () => {
+
+  const pin = prompt("Admin PIN eingeben");
+
+  if (pin === null) return;
+
+  if (pin !== APP.admin.pin) {
+
+    alert("Falscher PIN");
+
+    return;
+
+  }
 
   adminWindow.style.display = "block";
 
