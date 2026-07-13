@@ -11,6 +11,13 @@
    Beschreibung:
    CSV ↔ Firestore Synchronisation
 
+   Enthält:
+
+   - CSV laden
+   - Firestore laden
+   - Datumsvergleich
+   - Spielervergleich
+
 ===================================== */
 
 console.log("sync.js Version 2.2.0b geladen");
@@ -24,48 +31,49 @@ const Sync = {
 
     async analyse() {
 
-    console.clear();
+        console.clear();
 
-    console.log("=================================");
-    console.log(" GOLDIES SYNC");
-    console.log(" Version " + APP.version);
-    console.log("=================================");
+        console.log("=================================");
+        console.log(" GOLDIES SYNC");
+        console.log(" Version " + APP.version);
+        console.log("=================================");
 
-    // CSV laden
-    const csv = await this.loadCSV();
+        // CSV laden
+        const csv = await this.loadCSV();
 
-    // Firestore laden
-    const dbData = await this.loadFirestore();
+        // Firestore laden
+        const dbData = await this.loadFirestore();
 
-    // Datum vergleichen
-    const dateResult =
-        this.compareDates(csv, dbData);
-       
-   // Spieler vergleichen
-   const playerResult =
-    this.comparePlayers(csv, dbData);
+        // Datum vergleichen
+        const dateResult =
+            this.compareDates(csv, dbData);
 
-    console.log("");
+        // Spieler vergleichen
+        const playerResult =
+            this.comparePlayers(csv, dbData);
 
-    console.log("Neue Daten:");
-    console.log(dateResult.newDates);
 
-    console.log("");
+        console.log("");
 
-    console.log("Entfernte Daten:");
-    console.log(dateResult.removedDates);
+        console.log("Neue Daten:");
+        console.log(dateResult.newDates);
 
-   console.log("");
+        console.log("");
 
-   console.log("Neue Spieler:");
-   console.log(playerResult.newPlayers);
+        console.log("Entfernte Daten:");
+        console.log(dateResult.removedDates);
 
-   console.log("");
+        console.log("");
 
-   console.log("Entfernte Spieler:");
-   console.log(playerResult.removedPlayers);
+        console.log("Neue Spieler:");
+        console.log(playerResult.newPlayers);
 
-},
+        console.log("");
+
+        console.log("Entfernte Spieler:");
+        console.log(playerResult.removedPlayers);
+
+    },
 
 
     /* =====================================
@@ -110,21 +118,24 @@ const Sync = {
     compareDates(csv, dbData) {
 
         // Datumszeile CSV
-        const csvDates = csv[0].slice(1);
+        const csvDates =
+            csv[0].slice(1);
 
         // Datumszeile Firestore
-        const dbDates = dbData[0].slice(1);
-
+        const dbDates =
+            dbData[0].slice(1);
 
         // Neue Daten
         const newDates =
-            csvDates.filter(date => !dbDates.includes(date));
-
+            csvDates.filter(
+                date => !dbDates.includes(date)
+            );
 
         // Entfernte Daten
         const removedDates =
-            dbDates.filter(date => !csvDates.includes(date));
-
+            dbDates.filter(
+                date => !csvDates.includes(date)
+            );
 
         return {
 
@@ -137,39 +148,44 @@ const Sync = {
     },
 
 
-/* =====================================
-   SPIELER VERGLEICHEN
-===================================== */
+    /* =====================================
+       SPIELER VERGLEICHEN
+    ===================================== */
 
-comparePlayers(csv, dbData) {
+    comparePlayers(csv, dbData) {
 
-    // Spielernamen CSV
-    const csvPlayers =
-        csv.slice(2).map(row => row[0]);
+        // Spielernamen CSV
+        const csvPlayers =
+            csv
+                .slice(2)
+                .map(row => row[0]);
 
-    // Spielernamen Firestore
-    const dbPlayers =
-        dbData.slice(2).map(row => row[0]);
+        // Spielernamen Firestore
+        const dbPlayers =
+            dbData
+                .slice(2)
+                .map(row => row[0]);
 
+        // Neue Spieler
+        const newPlayers =
+            csvPlayers.filter(
+                name => !dbPlayers.includes(name)
+            );
 
-    // Neue Spieler
-    const newPlayers =
-        csvPlayers.filter(name => !dbPlayers.includes(name));
+        // Entfernte Spieler
+        const removedPlayers =
+            dbPlayers.filter(
+                name => !csvPlayers.includes(name)
+            );
 
+        return {
 
-    // Entfernte Spieler
-    const removedPlayers =
-        dbPlayers.filter(name => !csvPlayers.includes(name));
+            newPlayers,
 
+            removedPlayers
 
-    return {
+        };
 
-        newPlayers,
-
-        removedPlayers
-
-    };
-
-},
+    }
 
 };
