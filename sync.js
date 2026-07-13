@@ -6,7 +6,7 @@
    sync.js
 
    Version:
-   2.2.0a
+   2.2.0b
 
    Autor:
    Dario Lorenzon
@@ -14,23 +14,19 @@
    Beschreibung:
    CSV ↔ Firestore Synchronisation
 
-   Diese Datei enthält künftig:
-
-   - CSV Analyse
-   - CSV Synchronisation
-   - Aufbau einer neuen Tabelle
-   - Vergleich CSV ↔ Firestore
-   - Zusammenfassung der Änderungen
-
 ===================================== */
 
 
-/* =====================================
-   CSV ANALYSE
-===================================== */
+const Sync = {
 
-async function analyseCSV() {
+    /* =====================================
+       CSV ANALYSE STARTEN
+    ===================================== */
 
-    alert("sync.js erfolgreich eingebunden.");
+    async analyse() {
 
-}
+        alert("Sync.analyse() gestartet");
+
+    }
+
+};
