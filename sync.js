@@ -6,15 +6,11 @@
    sync.js
 
    Version:
-   2.2.0c
-
-   Beschreibung:
-   CSV ↔ Firestore Synchronisation
+   2.2.0d
 
 ===================================== */
 
-console.log("sync.js Version 2.2.0c geladen");
-
+console.log("sync.js Version 2.2.0d geladen");
 
 const Sync = {
 
@@ -31,43 +27,36 @@ const Sync = {
         console.log(" Version " + APP.version);
         console.log("=================================");
 
-        // CSV laden
         const csv = await this.loadCSV();
-
-        // Firestore laden
         const dbData = await this.loadFirestore();
 
-        // Daten vergleichen
-        const dateResult =
-            this.compareDates(csv, dbData);
-
-        // Spieler vergleichen
-        const playerResult =
-            this.comparePlayers(csv, dbData);
-
+        const dateResult = this.compareDates(csv, dbData);
+        const playerResult = this.comparePlayers(csv, dbData);
 
         console.log("");
-
         console.log("Neue Daten:");
         console.log(dateResult.newDates);
 
         console.log("");
-
         console.log("Entfernte Daten:");
         console.log(dateResult.removedDates);
 
         console.log("");
-
         console.log("Neue Spieler:");
         console.log(playerResult.newPlayers);
 
         console.log("");
-
         console.log("Entfernte Spieler:");
         console.log(playerResult.removedPlayers);
 
-    },
+        // Lookup erzeugen
+        const lookup = this.createLookup(dbData);
 
+        console.log("");
+        console.log("Lookup:");
+        console.log(lookup);
+
+    },
 
     /* =====================================
        CSV LADEN
@@ -78,7 +67,6 @@ const Sync = {
         return await loadCSV();
 
     },
-
 
     /* =====================================
        FIRESTORE LADEN
@@ -103,7 +91,6 @@ const Sync = {
 
     },
 
-
     /* =====================================
        DATEN VERGLEICHEN
     ===================================== */
@@ -124,7 +111,6 @@ const Sync = {
         };
 
     },
-
 
     /* =====================================
        SPIELER VERGLEICHEN
@@ -150,13 +136,8 @@ const Sync = {
 
     },
 
-
     /* =====================================
        SPIELER SUCHEN
-
-       Rückgabe:
-       Zeilennummer
-       oder -1
     ===================================== */
 
     findPlayerRow(table, playerName) {
@@ -175,13 +156,8 @@ const Sync = {
 
     },
 
-
     /* =====================================
        DATUM SUCHEN
-
-       Rückgabe:
-       Spaltennummer
-       oder -1
     ===================================== */
 
     findDateColumn(table, date) {
@@ -197,6 +173,48 @@ const Sync = {
         }
 
         return -1;
+
+    },
+
+    /* =====================================
+       LOOKUP ERZEUGEN
+
+       Schlüssel:
+       Spieler|Datum
+
+       Beispiel:
+
+       Isa|01.04 -> ja
+
+    ===================================== */
+
+    createLookup(table) {
+
+        const lookup = {};
+
+        // Alle Spieler
+        for (let r = 2; r < table.length; r++) {
+
+            const player = table[r][0];
+
+            // Alle Daten
+            for (let c = 1; c < table[0].length; c++) {
+
+                const date = table[0][c];
+                const value = table[r][c];
+
+                // Nur belegte Felder speichern
+                if (value && value !== "") {
+
+                    lookup[player + "|" + date] = value;
+
+                }
+
+            }
+
+        }
+
+        return lookup;
 
     }
 
