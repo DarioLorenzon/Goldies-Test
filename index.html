@@ -430,8 +430,6 @@ const firebaseConfigTest = {
   const kalender = await loadCalendar();
   const spieler = await loadPlayers();
 
-  console.log(result[0]);
-  console.log(result[1]);
 
   const table = [];
 
@@ -572,7 +570,10 @@ for (let r = 2; r < csv.length; r++) {
 
 }
 
-console.log(result[1]);
+
+  console.log(result[0]);
+  console.log(result[1]);
+  
 return result;
 
 }
