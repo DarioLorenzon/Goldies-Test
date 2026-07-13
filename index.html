@@ -563,9 +563,22 @@ function mergeData(csv, dbData) {
         for (let c = 1; c < csv[0].length; c++) {
 
             const date = (csv[0][c] || "").trim();
-            const key = player + "|" + date;
 
-            row.push(lookup[key] || "");
+            // Neues Format (TT.MM.JJJJ)
+            const key = player + "|" + date;
+            
+            // Altes Format (TT.MM)
+            const shortDate = date.substring(0, 5);
+            const oldKey = player + "|" + shortDate;
+            
+            // Zuerst neues Format suchen,
+            // danach altes Format
+            const value =
+                lookup[key] ??
+                lookup[oldKey] ??
+                "";
+            
+            row.push(value);
 
         }
 
@@ -619,11 +632,15 @@ function getDateObject(text) {
 
 }
     
-  function isWeekend(text) {
+  /* =====================================
+   WEEKEND ERKENNEN
+===================================== */
 
-    const date = getDateObject(text);
+function isWeekend(text) {
 
-    if (!date) return false;
+    if (!text) return false;
+
+    const date = new Date(text.split(".").reverse().join("-"));
 
     const day = date.getDay();
 
@@ -634,14 +651,14 @@ function getDateObject(text) {
 
 
   /* =====================================
-     HEUTE ERKENNEN
-  ===================================== */
+   HEUTE ERKENNEN
+===================================== */
 
-  function isToday(text) {
+function isToday(text) {
 
-    const date = getDateObject(text);
+    if (!text) return false;
 
-    if (!date) return false;
+    const date = new Date(text.split(".").reverse().join("-"));
 
     const today = new Date();
 
@@ -657,16 +674,15 @@ function getDateObject(text) {
 
 
 
-  /* =====================================
-     ZUKUNFT ODER HEUTE
-     → alte Daten ausblenden
-  ===================================== */
+ /* =====================================
+   ZUKUNFT ODER HEUTE
+===================================== */
 
-  function isFutureOrToday(text) {
+function isFutureOrToday(text) {
 
-    const date = getDateObject(text);
+    if (!text) return true;
 
-    if (!date) return true;
+    const date = new Date(text.split(".").reverse().join("-"));
 
     const today = new Date();
 
@@ -675,7 +691,6 @@ function getDateObject(text) {
     return date >= today;
 
 }
-
   /* =====================================
    CSV SYNCHRONISIEREN
 ===================================== */
@@ -902,7 +917,25 @@ async function restoreBackup() {
     alert("Backup erfolgreich wiederhergestellt.");
 
 }
-  
+
+
+    /* =====================================
+   DATUM FORMATIEREN
+   Anzeige: TT.MM
+===================================== */
+
+function formatDate(text) {
+
+    if (!text)
+        return "";
+
+    // TT.MM.JJJJ -> TT.MM
+    if (text.length >= 10)
+        return text.substring(0, 5);
+
+    return text;
+
+}
 
   /* =====================================
      DRAW TABLE
@@ -980,7 +1013,7 @@ async function restoreBackup() {
       let val =
         data[0][c] || "";
 
-      th.textContent = val;
+      th.textContent = formatDate(val);
 
 
       /* Kommentar vorhanden */
@@ -1221,7 +1254,7 @@ async function restoreBackup() {
       let val =
         data[0][c] || "";
 
-      th.textContent = val;
+     th.textContent = formatDate(val);
 
       if (isWeekend(val))
         th.classList.add("weekend");
