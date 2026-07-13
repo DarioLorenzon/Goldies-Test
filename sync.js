@@ -40,6 +40,10 @@ const Sync = {
     // Datum vergleichen
     const dateResult =
         this.compareDates(csv, dbData);
+       
+   // Spieler vergleichen
+   const playerResult =
+    this.comparePlayers(csv, dbData);
 
     console.log("");
 
@@ -123,3 +127,38 @@ const Sync = {
     }
 
 };
+
+/* =====================================
+   SPIELER VERGLEICHEN
+===================================== */
+
+comparePlayers(csv, dbData) {
+
+    // Spielernamen CSV
+    const csvPlayers =
+        csv.slice(2).map(row => row[0]);
+
+    // Spielernamen Firestore
+    const dbPlayers =
+        dbData.slice(2).map(row => row[0]);
+
+
+    // Neue Spieler
+    const newPlayers =
+        csvPlayers.filter(name => !dbPlayers.includes(name));
+
+
+    // Entfernte Spieler
+    const removedPlayers =
+        dbPlayers.filter(name => !csvPlayers.includes(name));
+
+
+    return {
+
+        newPlayers,
+
+        removedPlayers
+
+    };
+
+},
