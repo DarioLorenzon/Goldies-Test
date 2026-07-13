@@ -24,34 +24,34 @@ const Sync = {
 
     async analyse() {
 
-        console.clear();
+    console.clear();
 
-        console.log("=================================");
-        console.log(" GOLDIES SYNC");
-        console.log(" Version " + APP.version);
-        console.log("=================================");
+    console.log("=================================");
+    console.log(" GOLDIES SYNC");
+    console.log(" Version " + APP.version);
+    console.log("=================================");
 
-        // CSV laden
-        const csv = await this.loadCSV();
+    // CSV laden
+    const csv = await this.loadCSV();
 
-        // Firestore laden
-        const dbData = await this.loadFirestore();
+    // Firestore laden
+    const dbData = await this.loadFirestore();
 
-        // Datum vergleichen
-        const dateResult =
-            this.compareDates(csv, dbData);
+    // Datum vergleichen
+    const dateResult =
+        this.compareDates(csv, dbData);
 
-        console.log("");
+    console.log("");
 
-        console.log("Neue Daten:");
-        console.log(dateResult.newDates);
+    console.log("Neue Daten:");
+    console.log(dateResult.newDates);
 
-        console.log("");
+    console.log("");
 
-        console.log("Entfernte Daten:");
-        console.log(dateResult.removedDates);
+    console.log("Entfernte Daten:");
+    console.log(dateResult.removedDates);
 
-    },
+},
 
 
     /* =====================================
