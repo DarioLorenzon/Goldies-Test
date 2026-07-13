@@ -583,22 +583,53 @@ function mergeData(csv, dbData) {
      → Samstag / Sonntag markieren
   ===================================== */
 
+/* =====================================
+   DATUM ERMITTELN
+   Unterstützt Jahreswechsel
+===================================== */
+
+function getDateObject(text) {
+
+    const p = text.split(".");
+
+    if (p.length < 2) return null;
+
+    const day = parseInt(p[0], 10);
+    const month = parseInt(p[1], 10) - 1;
+
+    const today = new Date();
+
+    let year = today.getFullYear();
+
+    let date = new Date(year, month, day);
+
+    // Wenn das Datum bereits vorbei ist,
+    // aber mehr als 6 Monate zurückliegt,
+    // gehört es wahrscheinlich ins nächste Jahr.
+    if (
+        date < today &&
+        (today.getMonth() - month) > 6
+    ) {
+
+        date = new Date(year + 1, month, day);
+
+    }
+
+    return date;
+
+}
+    
   function isWeekend(text) {
 
-    let p = text.split(".");
+    const date = getDateObject(text);
 
-    if (p.length < 2) return false;
+    if (!date) return false;
 
-    let d = parseInt(p[0]);
-    let m = parseInt(p[1]) - 1;
-
-    let date = new Date(2026, m, d);
-
-    let day = date.getDay();
+    const day = date.getDay();
 
     return day === 0 || day === 6;
 
-  }
+}
 
 
 
@@ -608,26 +639,21 @@ function mergeData(csv, dbData) {
 
   function isToday(text) {
 
-    let p = text.split(".");
+    const date = getDateObject(text);
 
-    if (p.length < 2) return false;
+    if (!date) return false;
 
-    let d = parseInt(p[0]);
-    let m = parseInt(p[1]) - 1;
-
-    let today = new Date();
-
-    let date =
-      new Date(today.getFullYear(), m, d);
+    const today = new Date();
 
     return (
 
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth()
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
 
     );
 
-  }
+}
 
 
 
@@ -638,23 +664,17 @@ function mergeData(csv, dbData) {
 
   function isFutureOrToday(text) {
 
-    let p = text.split(".");
+    const date = getDateObject(text);
 
-    if (p.length < 2) return true;
+    if (!date) return true;
 
-    let d = parseInt(p[0]);
-    let m = parseInt(p[1]) - 1;
-
-    let date = new Date(2026, m, d);
-
-    let today = new Date();
+    const today = new Date();
 
     today.setHours(0, 0, 0, 0);
 
     return date >= today;
 
-  }
-
+}
 
   /* =====================================
    CSV SYNCHRONISIEREN
