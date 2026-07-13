@@ -425,53 +425,86 @@ const firebaseConfigTest = {
      → liest teilnahmen.csv
   ===================================== */
 
-  function loadCSV() {
+ async function loadCSV() {
 
-    return new Promise(resolve => {
+  const kalender = await loadCalendar();
+  const spieler = await loadPlayers();
 
-      Papa.parse("./teilnahmen.csv", {
+  const table = [];
 
-        download: true,
+  // Kopfzeile
+  table.push([""]);
+  kalender.forEach(k => table[0].push(k.Datum));
 
-        complete: (res) => {
+  // Typzeile
+  table.push([""]);
+  kalender.forEach(k => table[1].push(k.Typ));
 
-          let rows = res.data;
+  // Spieler
+  spieler.forEach(name => {
 
+    const row = [name];
 
-          // Leere Zeilen entfernen
-          rows = rows.filter(r =>
-            r && r.some(v => v && v.trim() !== "")
-          );
+    while (row.length < table[0].length) {
+      row.push("");
+    }
 
+    table.push(row);
 
-          // längste Zeile finden
-          let max = 0;
+  });
 
-          rows.forEach(r => {
-            if (r.length > max) max = r.length;
-          });
+  return table;
 
+}
 
-          // alle Zeilen gleich lang machen
-          rows = rows.map(r => {
+    async function loadCalendar() {
 
-            while (r.length < max) r.push("");
+  return new Promise(resolve => {
 
-            return r;
+    Papa.parse("./kalender.csv", {
 
-          });
+      download: true,
+      header: true,
+      delimiter: ";",
 
+      complete: res => {
 
-          resolve(rows);
+        resolve(res.data.filter(r => r.Datum));
 
-        }
-
-      });
+      }
 
     });
 
-  }
+  });
 
+}
+
+
+async function loadPlayers() {
+
+  return new Promise(resolve => {
+
+    Papa.parse("./spieler.csv", {
+
+      download: true,
+      header: true,
+      delimiter: ";",
+
+      complete: res => {
+
+        resolve(
+          res.data
+             .filter(r => r.Name)
+             .map(r => r.Name)
+        );
+
+      }
+
+    });
+
+  });
+
+}
 
 
   /* =====================================
