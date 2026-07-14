@@ -12,7 +12,6 @@
   <!-- Mobile Darstellung -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
   <!-- =====================================
        LIBRARIES
   ===================================== -->
@@ -24,21 +23,15 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     
-
-
   <!-- =====================================
        CSS
   ===================================== -->
 
-
     <link rel="stylesheet" href="style.css?v=3.0.0">
 
-
 </head>
-
-
+  
 <body>
-
 
   <!-- =====================================
        TABLE CONTAINER
@@ -50,8 +43,6 @@
     <table id="t"></table>
 
   </div>
-
-
 
   <!-- =====================================
        COMMENT POPUP
@@ -79,22 +70,17 @@
 
   </div>
 
-
-
   <!-- =====================================
        TOOLTIP FÜR KOMMENTAR (Hover)
   ===================================== -->
 
   <div id="commentTip"></div>
 
-
-
   <!-- =====================================
        SCRIPT START
   ===================================== -->
 
   <script>
-
 
 /* =====================================
    DATUM ERMITTELN
@@ -125,13 +111,9 @@ function getDateObject(text) {
     ) {
 
         date = new Date(year + 1, month, day);
-
     }
-
     return date;
-
 }
-
 
 /* =====================================
    DATUM PARSEN
@@ -155,7 +137,7 @@ function parseDate(text) {
 
 }
 
-    
+  
   /* =====================================
    WEEKEND ERKENNEN
 ===================================== */
@@ -171,8 +153,6 @@ function isWeekend(text) {
     return day === 0 || day === 6;
 
 }
-
-
 
   /* =====================================
    HEUTE ERKENNEN
@@ -194,8 +174,6 @@ function isToday(text) {
 
 }
 
-
-
  /* =====================================
    ZUKUNFT ODER HEUTE
 ===================================== */
@@ -216,7 +194,6 @@ function isFutureOrToday(text) {
 
 }
     
-
     /* =====================================
    DATUM FORMATIEREN
    Anzeige: TT.MM
@@ -261,7 +238,6 @@ function nextStatus(r, c) {
 
 }
     
-
   /* =====================================
      DRAW TABLE
      → baut komplette Tabelle neu
@@ -274,9 +250,6 @@ function nextStatus(r, c) {
     t.innerHTML = "";
 
     if (!data.length) return;
-
-
-
 
     /* =====================================
        Sichtbare Spalten bestimmen
@@ -291,7 +264,6 @@ for (let c = 0; c < data[0].length; c++) {
 
         visibleCols.push(c);
         continue;
-
     }
 
     if (isFutureOrToday(data[0][c])) {
@@ -301,7 +273,6 @@ for (let c = 0; c < data[0].length; c++) {
     }
 
 }
-
 
     /* =====================================
        Total zählen
@@ -360,13 +331,11 @@ for (let c = 0; c < data[0].length; c++) {
 
         };
 
-
         th.onmouseout = () => {
 
           hideTip();
 
         };
-
 
         th.onclick = () => {
 
@@ -386,21 +355,17 @@ for (let c = 0; c < data[0].length; c++) {
 
       }
 
-
       if (isWeekend(val))
         th.classList.add("weekend");
 
       if (isToday(val))
         th.classList.add("today");
 
-
       trHead.appendChild(th);
 
     });
 
     t.appendChild(trHead);
-
-
 
     /* =====================================
        TYPE ROW
@@ -437,8 +402,6 @@ for (let c = 0; c < data[0].length; c++) {
 
     t.appendChild(trType);
 
-
-
     /* =====================================
        TOTAL ROW
     ===================================== */
@@ -470,8 +433,6 @@ for (let c = 0; c < data[0].length; c++) {
     });
 
     t.appendChild(trTotal);
-
-
 
 /* =====================================
    PLAYERS
@@ -571,7 +532,6 @@ for (let r = 2; r < data.length; r++) {
 
             };
 
-
             /* ==============================
                Punkt anzeigen
             ============================== */
@@ -605,8 +565,6 @@ for (let r = 2; r < data.length; r++) {
 
 }
 
-
-
     /* =====================================
        BOTTOM DATE
     ===================================== */
@@ -635,8 +593,6 @@ for (let r = 2; r < data.length; r++) {
     });
 
     t.appendChild(trBottom);
-
-
 
     /* =====================================
        BOTTOM TYPE
@@ -674,8 +630,6 @@ for (let r = 2; r < data.length; r++) {
     t.appendChild(trTypeBottom);
 
   }
-
-
 
   </script>
 
