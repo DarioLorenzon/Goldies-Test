@@ -83,6 +83,13 @@
   <script>
 
 /* =====================================
+   ANIMATION
+===================================== */
+
+const HIGHLIGHT_TIME = 300;
+    
+
+/* =====================================
    DATUM ERMITTELN
    Unterstützt Jahreswechsel
 ===================================== */
@@ -270,7 +277,7 @@ function highlightSelection(r, c, td) {
 
         td.classList.remove("highlight-cell");
 
-    }, 180);
+    }, HIGHLIGHT_TIME);
 
 }
     
@@ -515,7 +522,7 @@ for (let r = 2; r < data.length; r++) {
 
                     nextStatus(r, c);
 
-                }, 180);
+                }, HIGHLIGHT_TIME);
 
             };
 
