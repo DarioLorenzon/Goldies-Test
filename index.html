@@ -472,7 +472,7 @@ for (let c = 0; c < data[0].length; c++) {
 
     t.appendChild(trTotal);
 
-/* =====================================
+    /* =====================================
    PLAYERS
 ===================================== */
 
@@ -484,9 +484,6 @@ for (let r = 2; r < data.length; r++) {
 
         const td = document.createElement("td");
 
-        td.dataset.row = r;
-        td.dataset.col = c;
-
         const val = data[r][c] || "";
 
         /* ==============================
@@ -496,9 +493,7 @@ for (let r = 2; r < data.length; r++) {
         if (c === 0) {
 
             td.textContent = val;
-
             td.className = "name";
-
             td.dataset.row = r;
 
         }
@@ -507,27 +502,24 @@ for (let r = 2; r < data.length; r++) {
            Teilnahme
         ============================== */
 
-          /* ==============================
-   Schnellklick
-============================== */
+        else {
 
-td.onclick = () => {
+            td.dataset.row = r;
+            td.dataset.col = c;
 
-    // Datum + Name + Zelle hervorheben
-    highlightSelection(r, c, td);
+            td.onclick = () => {
 
-    // Nach kurzer Animation Status wechseln
-    setTimeout(() => {
+                highlightSelection(r, c, td);
 
-        nextStatus(r, c);
+                setTimeout(() => {
 
-    }, 180);
+                    nextStatus(r, c);
 
-};
+                }, 180);
 
-            /* ==============================
-               Punkt anzeigen
-            ============================== */
+            };
+
+            /* Punkt anzeigen */
 
             if (val) {
 
