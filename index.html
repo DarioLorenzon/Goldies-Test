@@ -12,7 +12,6 @@
   <!-- Mobile Darstellung -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
   <!-- =====================================
        LIBRARIES
   ===================================== -->
@@ -24,23 +23,15 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     
-    <!-- Goldies -->
-    <script src="firebase.js?v=3.0.0"></script>
-
-
   <!-- =====================================
        CSS
   ===================================== -->
 
-
     <link rel="stylesheet" href="style.css?v=3.0.0">
 
-
 </head>
-
-
+  
 <body>
-
 
   <!-- =====================================
        TABLE CONTAINER
@@ -52,8 +43,6 @@
     <table id="t"></table>
 
   </div>
-
-
 
   <!-- =====================================
        COMMENT POPUP
@@ -81,15 +70,11 @@
 
   </div>
 
-
-
   <!-- =====================================
        TOOLTIP FÜR KOMMENTAR (Hover)
   ===================================== -->
 
   <div id="commentTip"></div>
-
-
 
   <!-- =====================================
        SCRIPT START
@@ -97,80 +82,12 @@
 
   <script>
 
+/* =====================================
+   ANIMATION
+===================================== */
 
-
-  /* =====================================
-     GLOBAL VARIABLES
-  ===================================== */
-
-  // Tabelle mit allen Daten
-  let data = [];
-
-  // Kommentare pro Datum
-  let comments = {};
-
-  // aktuelles Kommentar Datum
-  let currentCommentDate = null;
-
-  // Initialisierung fertig?
-  let initialized = false;
-
-  // Timer für Autosave
-  let saveTimer = null;
-
-
-
- 
-
-
-  /* =====================================
-     TOOLTIP FUNKTIONEN
-  ===================================== */
-
-
-
-
-
-
-
-  /* =====================================
-     COMMENT FUNCTIONS
-  ===================================== */
-
- 
-
-
-  
-
- 
-
-
-
-  /* =====================================
-     CSV LADEN
-     → liest teilnahmen.csv
-  ===================================== */
-
-
-
-
-
-
-
-
-  /* =====================================
-     MERGE CSV + FIREBASE
-     → CSV bestimmt Struktur
-     → DB enthält Einträge
-  ===================================== */
-
-
- 
-
-  /* =====================================
-     WEEKEND ERKENNEN
-     → Samstag / Sonntag markieren
-  ===================================== */
+const HIGHLIGHT_TIME = 600;
+    
 
 /* =====================================
    DATUM ERMITTELN
@@ -201,13 +118,9 @@ function getDateObject(text) {
     ) {
 
         date = new Date(year + 1, month, day);
-
     }
-
     return date;
-
 }
-
 
 /* =====================================
    DATUM PARSEN
@@ -231,7 +144,7 @@ function parseDate(text) {
 
 }
 
-    
+  
   /* =====================================
    WEEKEND ERKENNEN
 ===================================== */
@@ -247,8 +160,6 @@ function isWeekend(text) {
     return day === 0 || day === 6;
 
 }
-
-
 
   /* =====================================
    HEUTE ERKENNEN
@@ -270,8 +181,6 @@ function isToday(text) {
 
 }
 
-
-
  /* =====================================
    ZUKUNFT ODER HEUTE
 ===================================== */
@@ -292,232 +201,6 @@ function isFutureOrToday(text) {
 
 }
     
-  /* =====================================
-   CSV SYNCHRONISIEREN
-===================================== */
-
-/* =====================================
-   CSV SYNCHRONISIEREN
-===================================== */
-
-async function synchronizeCSV() {
-
-    try {
-
-        // Tages-Backup erstellen
-        await createDailyBackup();
-
-        // CSV einlesen
-        const csv = await loadCSV();
-
-        // Firestore lesen
-        const doc = await db
-            .collection("training")
-            .doc("list")
-            .get();
-
-        let dbData = [];
-
-        if (doc.exists && doc.data().json) {
-
-            dbData = JSON.parse(doc.data().json);
-
-        }
-
-        // Daten zusammenführen
-        const merged = mergeData(csv, dbData);
-
-        // Kommentare beibehalten
-        const comments = doc.exists
-            ? (doc.data().comments || {})
-            : {};
-
-        // Firestore speichern
-        await db
-            .collection("training")
-            .doc("list")
-            .set({
-
-                json: JSON.stringify(merged),
-                comments: comments
-
-            });
-
-        // Tabelle neu laden
-        await load();
-
-        alert("CSV erfolgreich synchronisiert.");
-
-    }
-
-    catch (err) {
-
-        console.error(err);
-
-        alert("Fehler beim Synchronisieren.");
-
-    }
-
-}
-
-
-/* =====================================
-   TAGES-BACKUP
-   Wird maximal 1x pro Tag erstellt
-===================================== */
-
-async function createDailyBackup() {
-
-    const today =
-        new Date()
-            .toISOString()
-            .substring(0, 10);
-
-    const backupRef =
-        db.collection("backup").doc(today);
-
-    const backupDoc =
-        await backupRef.get();
-
-    // Existiert bereits → nichts machen
-    if (backupDoc.exists) {
-
-        return;
-
-    }
-
-    // Aktuelle Daten lesen
-    const doc = await db
-        .collection("training")
-        .doc("list")
-        .get();
-
-    if (!doc.exists) {
-
-        return;
-
-    }
-
-    // Backup speichern
-    await backupRef.set({
-
-        created: firebase.firestore.FieldValue.serverTimestamp(),
-
-        version: "3.0.0",
-
-        json: doc.data().json || "",
-
-        comments: doc.data().comments || {}
-
-    });
-
-
-}
-
-/* =====================================
-   BACKUPS AUFLISTEN
-===================================== */
-
-async function listBackups() {
-
-    try {
-
-        const snapshot = await db
-            .collection("backup")
-            .get();
-
-        const backups = [];
-
-        snapshot.forEach(doc => {
-
-            backups.push(doc.id);
-
-        });
-
-        // Neueste zuerst
-        backups.sort().reverse();
-
-        return backups;
-
-    }
-
-    catch (err) {
-
-        console.error(err);
-
-        return [];
-
-    }
-
-}
-
-/* =====================================
-   BACKUP WIEDERHERSTELLEN
-===================================== */
-
-async function restoreBackup() {
-
-    // Alle Backups lesen
-    const backups = await listBackups();
-
-    if (backups.length === 0) {
-
-        alert("Keine Backups vorhanden.");
-
-        return;
-
-    }
-
-    // Backup auswählen
-    const selected = prompt(
-
-        "Welches Backup wiederherstellen?\n\n" +
-
-        backups.join("\n")
-
-    );
-
-    if (!selected)
-        return;
-
-    // Backup laden
-    const doc = await db
-        .collection("backup")
-        .doc(selected)
-        .get();
-
-    if (!doc.exists) {
-
-        alert("Backup nicht gefunden.");
-
-        return;
-
-    }
-
-    // Sicherheit
-    if (!confirm("Backup " + selected + " wirklich wiederherstellen?"))
-        return;
-
-    // Training überschreiben
-    await db
-        .collection("training")
-        .doc("list")
-        .set({
-
-            json: doc.data().json,
-
-            comments: doc.data().comments || {}
-
-        });
-
-    // Neu laden
-    await load();
-
-    alert("Backup erfolgreich wiederhergestellt.");
-
-}
-
-
     /* =====================================
    DATUM FORMATIEREN
    Anzeige: TT.MM
@@ -536,6 +219,68 @@ function formatDate(text) {
 
 }
 
+/* =====================================
+   NÄCHSTER STATUS
+   Longpress
+
+   leer → ja → ev → nein → leer
+===================================== */
+
+function nextStatus(r, c) {
+
+    const order = ["", "ja", "ev", "nein"];
+
+    let i = order.indexOf(data[r][c]);
+
+    i++;
+
+    if (i >= order.length)
+        i = 0;
+
+    data[r][c] = order[i];
+
+    draw();
+
+    autoSave();
+
+}
+
+    /* =====================================
+   HIGHLIGHT SELECTION
+===================================== */
+
+function highlightSelection(r, c, td) {
+
+    // Spielername
+    const nameCell =
+        document.querySelector(`td.name[data-row="${r}"]`);
+
+    // Datum
+    const headerCell =
+        document.querySelector(`th[data-col="${c}"]`);
+
+    if (nameCell)
+        nameCell.classList.add("highlight");
+
+    if (headerCell)
+        headerCell.classList.add("highlight");
+
+    td.classList.add("highlight-cell");
+
+    setTimeout(() => {
+
+        if (nameCell)
+            nameCell.classList.remove("highlight");
+
+        if (headerCell)
+            headerCell.classList.remove("highlight");
+
+        td.classList.remove("highlight-cell");
+
+    }, HIGHLIGHT_TIME);
+
+}
+    
   /* =====================================
      DRAW TABLE
      → baut komplette Tabelle neu
@@ -548,9 +293,6 @@ function formatDate(text) {
     t.innerHTML = "";
 
     if (!data.length) return;
-
-
-
 
     /* =====================================
        Sichtbare Spalten bestimmen
@@ -565,13 +307,8 @@ for (let c = 0; c < data[0].length; c++) {
 
         visibleCols.push(c);
         continue;
-
     }
 
-
-
-
-  
     if (isFutureOrToday(data[0][c])) {
 
         visibleCols.push(c);
@@ -581,26 +318,40 @@ for (let c = 0; c < data[0].length; c++) {
 }
 
 
-    /* =====================================
-       Total zählen
-    ===================================== */
+          /* =====================================
+         TRAINER
+      ===================================== */
 
-    let counts =
-      new Array(data[0].length).fill(0);
+        const TRAINER = [
+            "Dario",
+            "Füge"
+        ];
 
-    for (let r = 2; r < data.length; r++) {
 
-      for (let c = 1; c < data[0].length; c++) {
-
-        if (data[r][c] === "ja") {
-
-          counts[c]++;
-
-        }
-
+          /* =====================================
+         Total zählen
+      ===================================== */
+      
+      let counts =
+          new Array(data[0].length).fill(0);
+      
+      for (let r = 2; r < data.length; r++) {
+      
+          // Trainer nicht mitzählen
+          if (TRAINER.includes(data[r][0]))
+              continue;
+      
+          for (let c = 1; c < data[0].length; c++) {
+      
+              if (data[r][c] === "ja") {
+      
+                  counts[c]++;
+      
+              }
+      
+          }
+      
       }
-
-    }
 
 
     /* =====================================
@@ -614,6 +365,8 @@ for (let c = 0; c < data[0].length; c++) {
 
       let th =
         document.createElement("th");
+      
+        th.dataset.col = c;
 
       let val =
         data[0][c] || "";
@@ -638,13 +391,11 @@ for (let c = 0; c < data[0].length; c++) {
 
         };
 
-
         th.onmouseout = () => {
 
           hideTip();
 
         };
-
 
         th.onclick = () => {
 
@@ -664,21 +415,17 @@ for (let c = 0; c < data[0].length; c++) {
 
       }
 
-
       if (isWeekend(val))
         th.classList.add("weekend");
 
       if (isToday(val))
         th.classList.add("today");
 
-
       trHead.appendChild(th);
 
     });
 
     t.appendChild(trHead);
-
-
 
     /* =====================================
        TYPE ROW
@@ -715,8 +462,6 @@ for (let c = 0; c < data[0].length; c++) {
 
     t.appendChild(trType);
 
-
-
     /* =====================================
        TOTAL ROW
     ===================================== */
@@ -749,100 +494,83 @@ for (let c = 0; c < data[0].length; c++) {
 
     t.appendChild(trTotal);
 
-
-
     /* =====================================
-       PLAYERS
-    ===================================== */
+   PLAYERS
+===================================== */
 
-    for (let r = 2; r < data.length; r++) {
+for (let r = 2; r < data.length; r++) {
 
-      let tr =
-        document.createElement("tr");
+    const tr = document.createElement("tr");
 
-      visibleCols.forEach(c => {
+    visibleCols.forEach(c => {
 
-        let td =
-          document.createElement("td");
+        const td = document.createElement("td");
 
-        let val =
-          data[r][c] || "";
+        const val = data[r][c] || "";
 
-
-        /* Name */
+        /* ==============================
+           Name
+        ============================== */
 
         if (c === 0) {
 
-          td.textContent = val;
-          td.className = "name";
+            td.textContent = val;
+            td.className = "name";
+            td.dataset.row = r;
 
         }
 
-        /* Teilnahme */
+        /* ==============================
+           Teilnahme
+        ============================== */
 
         else {
 
-          td.onclick = () => {
+            td.dataset.row = r;
+            td.dataset.col = c;
 
-            td.classList.add("tap");
+            td.onclick = () => {
 
-            setTimeout(() => {
+                highlightSelection(r, c, td);
 
-              td.classList.remove("tap");
+                setTimeout(() => {
 
-            }, 150);
+                    nextStatus(r, c);
 
+                }, HIGHLIGHT_TIME);
 
-            let order =
-              ["", "ja", "ev", "nein"];
+            };
 
-            let i =
-              order.indexOf(data[r][c]);
+            /* Punkt anzeigen */
 
-            i++;
+            if (val) {
 
-            if (i >= order.length)
-              i = 0;
+                const dot = document.createElement("div");
 
-            data[r][c] = order[i];
+                dot.className = "dot";
 
-            draw();
-            autoSave();
+                if (val === "ja")
+                    dot.classList.add("dot-ja");
 
-          };
+                else if (val === "ev")
+                    dot.classList.add("dot-ev");
 
+                else if (val === "nein")
+                    dot.classList.add("dot-nein");
 
-          if (val) {
+                td.appendChild(dot);
 
-            let dot =
-              document.createElement("div");
-
-            dot.className = "dot";
-
-            if (val === "ja")
-              dot.classList.add("dot-ja");
-
-            if (val === "ev")
-              dot.classList.add("dot-ev");
-
-            if (val === "nein")
-              dot.classList.add("dot-nein");
-
-            td.appendChild(dot);
-
-          }
+            }
 
         }
 
         tr.appendChild(td);
 
-      });
+    });
 
-      t.appendChild(tr);
+    t.appendChild(tr);
 
-    }
-
-
+}
 
     /* =====================================
        BOTTOM DATE
@@ -872,8 +600,6 @@ for (let c = 0; c < data[0].length; c++) {
     });
 
     t.appendChild(trBottom);
-
-
 
     /* =====================================
        BOTTOM TYPE
@@ -912,48 +638,16 @@ for (let c = 0; c < data[0].length; c++) {
 
   }
 
-
-  /* =====================================
-     LOAD
-     → CSV laden
-     → Firebase laden
-     → zusammenführen
-  ===================================== */
-
-/* =====================================
-   LOAD
-   -------------------------------------
-   Ablauf:
-
-   1. CSV laden (Struktur)
-   2. Firestore laden (Daten + Kommentare)
-   3. Wenn DB leer → CSV verwenden
-   4. CSV + DB zusammenführen
-   5. Falls nötig → DB neu speichern
-   6. Tabelle zeichnen
-
-   Diese Version ist stabil für:
-
-   ✔ leere DB
-   ✔ fehlendes json
-   ✔ kaputtes json
-   ✔ neue CSV
-   ✔ neue Firebase
-   ✔ Test / Prod
-===================================== */
-
-
-
-
   </script>
 
-  <!-- =====================================
-       JAVASCRIPT MODULE
-  ===================================== -->
-
+ <!-- =====================================
+     JAVASCRIPT MODULE
+===================================== -->
 
 <script src="firebase.js?v=3.0.0"></script>
 <script src="csv.js?v=3.0.0"></script>
+<script src="comments.js?v=3.0.0"></script>
+<script src="backup.js?v=3.0.0"></script>
 <script src="main.js?v=3.0.0"></script>
 <script src="admin.js?v=3.0.0"></script>
 
