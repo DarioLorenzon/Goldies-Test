@@ -64,6 +64,22 @@ async function createDailyBackup() {
 
 }
 
+/* =====================================
+   BACKUPS AUFLISTEN
+
+   Liest alle vorhandenen Tages-Backups
+   aus Firestore und gibt sie in
+   absteigender Reihenfolge zurück.
+
+   Rückgabe:
+
+   [
+      "2026-07-13",
+      "2026-05-26",
+      ...
+   ]
+
+===================================== */
 
 async function listBackups() {
 
@@ -99,9 +115,21 @@ async function listBackups() {
 }
 
 
+/* =====================================
+   BACKUP WIEDERHERSTELLEN
+
+   Liest ein gespeichertes Tages-Backup
+   aus Firestore und ersetzt die
+   aktuellen Trainingsdaten.
+
+===================================== */
+
 async function restoreBackup() {
 
-    // Alle Backups lesen
+    /* ==============================
+       Verfügbare Backups laden
+    ============================== */
+
     const backups = await listBackups();
 
     if (backups.length === 0) {
@@ -112,7 +140,11 @@ async function restoreBackup() {
 
     }
 
-    // Backup auswählen
+
+    /* ==============================
+       Backup auswählen
+    ============================== */
+
     const selected = prompt(
 
         "Welches Backup wiederherstellen?\n\n" +
@@ -124,7 +156,11 @@ async function restoreBackup() {
     if (!selected)
         return;
 
-    // Backup laden
+
+    /* ==============================
+       Backup laden
+    ============================== */
+
     const doc = await db
         .collection("backup")
         .doc(selected)
@@ -138,11 +174,23 @@ async function restoreBackup() {
 
     }
 
-    // Sicherheit
-    if (!confirm("Backup " + selected + " wirklich wiederherstellen?"))
+
+    /* ==============================
+       Sicherheitsabfrage
+    ============================== */
+
+    if (!confirm(
+
+        "Backup " + selected + " wirklich wiederherstellen?"
+
+    ))
         return;
 
-    // Training überschreiben
+
+    /* ==============================
+       Trainingsdaten ersetzen
+    ============================== */
+
     await db
         .collection("training")
         .doc("list")
@@ -154,24 +202,55 @@ async function restoreBackup() {
 
         });
 
-    // Neu laden
+
+    /* ==============================
+       Tabelle neu laden
+    ============================== */
+
     await load();
 
     alert("Backup erfolgreich wiederhergestellt.");
 
 }
 
+
+/* =====================================
+   CSV SYNCHRONISIEREN
+
+   Ablauf
+
+   1. Tages-Backup erstellen
+   2. CSV laden
+   3. Firestore laden
+   4. Daten zusammenführen
+   5. Kommentare übernehmen
+   6. Firestore speichern
+   7. Tabelle neu laden
+
+===================================== */
+
 async function synchronizeCSV() {
 
     try {
 
-        // Tages-Backup erstellen
+        /* ==============================
+           Tages-Backup erstellen
+        ============================== */
+
         await createDailyBackup();
 
-        // CSV einlesen
+
+        /* ==============================
+           CSV laden
+        ============================== */
+
         const csv = await loadCSV();
 
-        // Firestore lesen
+
+        /* ==============================
+           Firestore laden
+        ============================== */
+
         const doc = await db
             .collection("training")
             .doc("list")
@@ -185,26 +264,43 @@ async function synchronizeCSV() {
 
         }
 
-        // Daten zusammenführen
+
+        /* ==============================
+           CSV + Firestore zusammenführen
+        ============================== */
+
         const merged = mergeData(csv, dbData);
 
-        // Kommentare beibehalten
+
+        /* ==============================
+           Kommentare übernehmen
+        ============================== */
+
         const comments = doc.exists
             ? (doc.data().comments || {})
             : {};
 
-        // Firestore speichern
+
+        /* ==============================
+           Firestore speichern
+        ============================== */
+
         await db
             .collection("training")
             .doc("list")
             .set({
 
                 json: JSON.stringify(merged),
+
                 comments: comments
 
             });
 
-        // Tabelle neu laden
+
+        /* ==============================
+           Tabelle neu laden
+        ============================== */
+
         await load();
 
         alert("CSV erfolgreich synchronisiert.");
@@ -220,4 +316,3 @@ async function synchronizeCSV() {
     }
 
 }
-
