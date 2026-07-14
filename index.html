@@ -321,6 +321,8 @@ for (let c = 0; c < data[0].length; c++) {
        Total zählen
     ===================================== */
 
+    let counts = new Array(data[0].length).fill(0);
+    
     for (let r = 2; r < data.length - 2; r++) {
 
     for (let c = 1; c < data[0].length; c++) {
