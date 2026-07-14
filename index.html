@@ -317,25 +317,41 @@ for (let c = 0; c < data[0].length; c++) {
 
 }
 
-    /* =====================================
-       Total zählen
-    ===================================== */
 
-    let counts = new Array(data[0].length).fill(0);
-    
-    for (let r = 2; r < data.length - 2; r++) {
+          /* =====================================
+         TRAINER
+      ===================================== */
 
-    for (let c = 1; c < data[0].length; c++) {
+        const TRAINER = [
+            "Dario",
+            "Füge"
+        ];
 
-        if (data[r][c] === "ja") {
 
-            counts[c]++;
-
-        }
-
-    }
-
-}
+          /* =====================================
+         Total zählen
+      ===================================== */
+      
+      let counts =
+          new Array(data[0].length).fill(0);
+      
+      for (let r = 2; r < data.length; r++) {
+      
+          // Trainer nicht mitzählen
+          if (TRAINER.includes(data[r][0]))
+              continue;
+      
+          for (let c = 1; c < data[0].length; c++) {
+      
+              if (data[r][c] === "ja") {
+      
+                  counts[c]++;
+      
+              }
+      
+          }
+      
+      }
 
 
     /* =====================================
