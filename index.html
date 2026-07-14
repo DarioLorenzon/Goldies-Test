@@ -235,6 +235,33 @@ function formatDate(text) {
 
 }
 
+/* =====================================
+   NÄCHSTER STATUS
+   Longpress
+
+   leer → ja → ev → nein → leer
+===================================== */
+
+function nextStatus(r, c) {
+
+    const order = ["", "ja", "ev", "nein"];
+
+    let i = order.indexOf(data[r][c]);
+
+    i++;
+
+    if (i >= order.length)
+        i = 0;
+
+    data[r][c] = order[i];
+
+    draw();
+
+    autoSave();
+
+}
+    
+
   /* =====================================
      DRAW TABLE
      → baut komplette Tabelle neu
@@ -446,96 +473,137 @@ for (let c = 0; c < data[0].length; c++) {
 
 
 
-    /* =====================================
-       PLAYERS
-    ===================================== */
+/* =====================================
+   PLAYERS
+===================================== */
 
-    for (let r = 2; r < data.length; r++) {
+for (let r = 2; r < data.length; r++) {
 
-      let tr =
-        document.createElement("tr");
+    const tr = document.createElement("tr");
 
-      visibleCols.forEach(c => {
+    visibleCols.forEach(c => {
 
-        let td =
-          document.createElement("td");
+        const td = document.createElement("td");
 
-        let val =
-          data[r][c] || "";
+        const val = data[r][c] || "";
 
-
-        /* Name */
+        /* ==============================
+           Name
+        ============================== */
 
         if (c === 0) {
 
-          td.textContent = val;
-          td.className = "name";
+            td.textContent = val;
+
+            td.className = "name";
 
         }
 
-        /* Teilnahme */
+        /* ==============================
+           Teilnahme
+        ============================== */
 
         else {
 
-          td.onclick = () => {
+            let timer = null;
 
-            td.classList.add("tap");
+            /* ---------- PC ---------- */
 
-            setTimeout(() => {
+            td.onmousedown = () => {
 
-              td.classList.remove("tap");
+                td.classList.add("tap");
 
-            }, 150);
+                timer = setTimeout(() => {
+
+                    td.classList.remove("tap");
+
+                    nextStatus(r, c);
+
+                }, 600);
+
+            };
+
+            td.onmouseup = () => {
+
+                clearTimeout(timer);
+
+                td.classList.remove("tap");
+
+            };
+
+            td.onmouseleave = () => {
+
+                clearTimeout(timer);
+
+                td.classList.remove("tap");
+
+            };
+
+            /* ---------- Mobile ---------- */
+
+            td.ontouchstart = () => {
+
+                td.classList.add("tap");
+
+                timer = setTimeout(() => {
+
+                    td.classList.remove("tap");
+
+                    nextStatus(r, c);
+
+                }, 600);
+
+            };
+
+            td.ontouchend = () => {
+
+                clearTimeout(timer);
+
+                td.classList.remove("tap");
+
+            };
+
+            td.ontouchcancel = () => {
+
+                clearTimeout(timer);
+
+                td.classList.remove("tap");
+
+            };
 
 
-            let order =
-              ["", "ja", "ev", "nein"];
+            /* ==============================
+               Punkt anzeigen
+            ============================== */
 
-            let i =
-              order.indexOf(data[r][c]);
+            if (val) {
 
-            i++;
+                const dot = document.createElement("div");
 
-            if (i >= order.length)
-              i = 0;
+                dot.className = "dot";
 
-            data[r][c] = order[i];
+                if (val === "ja")
+                    dot.classList.add("dot-ja");
 
-            draw();
-            autoSave();
+                else if (val === "ev")
+                    dot.classList.add("dot-ev");
 
-          };
+                else if (val === "nein")
+                    dot.classList.add("dot-nein");
 
+                td.appendChild(dot);
 
-          if (val) {
-
-            let dot =
-              document.createElement("div");
-
-            dot.className = "dot";
-
-            if (val === "ja")
-              dot.classList.add("dot-ja");
-
-            if (val === "ev")
-              dot.classList.add("dot-ev");
-
-            if (val === "nein")
-              dot.classList.add("dot-nein");
-
-            td.appendChild(dot);
-
-          }
+            }
 
         }
 
         tr.appendChild(td);
 
-      });
+    });
 
-      t.appendChild(tr);
+    t.appendChild(tr);
 
-    }
+}
 
 
 
