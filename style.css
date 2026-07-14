@@ -195,3 +195,27 @@ th:first-child {
     z-index: 2000;
 
 }
+
+
+/* =====================================
+   HIGHLIGHT
+===================================== */
+
+.highlight {
+
+    background: #ececec;
+
+    transition: background .18s ease;
+
+}
+
+.highlight-cell {
+
+    background: #ececec;
+
+    transform: scale(1.05);
+
+    transition: all .18s ease;
+
+}
+
